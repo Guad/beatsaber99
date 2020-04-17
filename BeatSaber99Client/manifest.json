@@ -1,0 +1,17 @@
+{
+  "author": "Guad",
+  "description": [
+    "Beat Saber Battle Royale"
+  ],
+  "gameVersion": "1.9.0",
+  "id": null,
+  "name": "Beat Saber 99",
+  "version": "0.0.1",
+  "features": [
+  ],
+  "links": {
+    "project-home": "https://example.com/demo-plugin",
+    "project-source": "https://github.com/exampleman/demo-plugin/",
+    "donate": "https://ko-fi.com/exampleman"
+  }
+}
