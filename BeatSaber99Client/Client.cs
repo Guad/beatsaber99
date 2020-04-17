@@ -31,7 +31,7 @@ namespace BeatSaber99Client
         public static event EventHandler<ClientStatus> ClientStatusChanged;
 
         private const string Address = "ws://127.0.0.1:6969/ws";
-        //private const string Address = "wss://beatsaber.kolhos.chichasov.es/ws";
+        // private const string Address = "wss://beatsaber.kolhos.chichasov.es/ws";
 
         private static WebSocket _client;
         private static Dictionary<string, Type> _packetTypes = new Dictionary<string, Type>();
@@ -44,6 +44,11 @@ namespace BeatSaber99Client
                 // var obj = (IPacket) Activator.CreateInstance(type);
                 _packetTypes.Add(type.Name, type);
             }
+        }
+
+        public static void Send(object o)
+        {
+            _client.Send(JsonConvert.SerializeObject(o));
         }
         
         public static void ConnectAndMatchmake()
@@ -59,6 +64,8 @@ namespace BeatSaber99Client
             _client.Opened += (sender, args) =>
             {
                 // We are connected and automatically matchmaking.
+                Plugin.log.Info("Connection created");
+
                 var id = GetUserInfo.GetUserID();
                 var name = GetUserInfo.GetUserName();
 

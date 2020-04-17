@@ -55,7 +55,7 @@ namespace BeatSaber99Client
         public void TrackSong(float duration)
         {
             songStart = Time.time;
-            songDuration = duration - 0.5f;
+            songDuration = duration - 0.2f;
 
             Plugin.log.Info($"Jukebox tracking duration: {duration}, time now: {songStart}");
         }
@@ -70,15 +70,19 @@ namespace BeatSaber99Client
 
                 var characteristic = LevelLoader.Characteristics.First(c => c.serializedName == song.Characteristic);
                 var level = LevelLoader.AllLevels.First(l => l.levelID == song.LevelID);
+                var gameplay = GameplayModifiers.defaultModifiers;
+
 
                 LevelLoader.PreloadBeatmapLevelAsync(
                     characteristic,
                     level,
                     song.Difficulty,
-                    GameplayModifiers.defaultModifiers,
+                    gameplay,
                     (preloadedLevel) =>
                     {
                         nextLevel = preloadedLevel;
+
+                        nextLevel.speed = (float)song.Speed;
                         Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
                     }
                 );
@@ -93,7 +97,7 @@ namespace BeatSaber99Client
                 if (nextLevel != null)
                 {
                     LevelLoader.SwitchLevel(nextLevel);
-                    TrackSong(nextLevel.levelResult.beatmapLevel.songDuration);
+                    TrackSong(nextLevel.levelResult.beatmapLevel.songDuration / nextLevel.speed);
                     songPreloaded = false;
                     nextLevel = null;
                     Plugin.log.Info("Level switched.");

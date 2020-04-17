@@ -21,6 +21,16 @@ func (bp BasePacket) Dispatch(sender *Client) {
 		json.Unmarshal(bp.data, &p)
 		p.Dispatch(sender)
 		break
+	case "PlayerStateUpdatePacket":
+		p := PlayerStateUpdatePacket{}
+		json.Unmarshal(bp.data, &p)
+		p.Dispatch(sender)
+		break
+	case "ActivateItemPacket":
+		p := ActivateItemPacket{}
+		json.Unmarshal(bp.data, &p)
+		p.Dispatch(sender)
+		break
 	}
 }
 
@@ -51,8 +61,44 @@ type PlayersLeftPacket struct {
 }
 
 type EnqueueSongPacket struct {
-	Type           string `json:"type,omitempty"`
-	Characteristic string `json:"Characteristic,omitempty"`
-	LevelID        string `json:"LevelID,omitempty"`
-	Difficulty     string `json:"Difficulty,omitempty"`
+	Type           string  `json:"type,omitempty"`
+	Characteristic string  `json:"Characteristic,omitempty"`
+	LevelID        string  `json:"LevelID,omitempty"`
+	Difficulty     string  `json:"Difficulty,omitempty"`
+	Speed          float64 `json:"Speed,omitempty"`
+}
+
+type WinnerPacket struct {
+	Type string `json:"type,omitempty"`
+}
+
+type EventLogPacket struct {
+	Type string `json:"type,omitempty"`
+	Text string `json:"Text,omitempty"`
+}
+
+type PlayerStateUpdatePacket struct {
+	Type         string  `json:"type,omitempty"`
+	Score        int     `json:"Score,omitempty"`
+	Energy       float64 `json:"Energy,omitempty"`
+	CurrentCombo int     `json:"CurrentCombo,omitempty"`
+}
+
+func (p PlayerStateUpdatePacket) Dispatch(player *Client) {
+	createFunnyMessageForStateUpdate(player, p)
+	player.lastState = p
+}
+
+type GiveItemPacket struct {
+	Type     string `json:"type,omitempty"`
+	ItemType string `json:"ItemType,omitempty"`
+}
+
+type ActivateItemPacket struct {
+	Type     string `json:"type,omitempty"`
+	ItemType string `json:"ItemType,omitempty"`
+}
+
+func (p ActivateItemPacket) Dispatch(sender *Client) {
+	sender.items.ActivateItem()
 }

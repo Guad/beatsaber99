@@ -10,5 +10,8 @@
         public PlayerSpecificSettings playerSpecificSettings { get; set; }
         public OverrideEnvironmentSettings environmentSettings { get; set;  }
         public ColorScheme colorScheme { get; set; }
+
+        public float speed { get; set; }
+        public float startTime { get; set; }
     }
 }

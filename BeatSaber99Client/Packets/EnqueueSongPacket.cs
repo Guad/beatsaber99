@@ -5,6 +5,7 @@
         public string Characteristic { get; set; }
         public string LevelID { get; set; }
         public BeatmapDifficulty Difficulty { get; set; }
+        public double Speed { get; set; }
 
 
         public void Dispatch()

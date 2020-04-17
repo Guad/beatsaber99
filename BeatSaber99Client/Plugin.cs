@@ -1,4 +1,5 @@
-﻿using BeatSaber99Client.UI;
+﻿using BeatSaber99Client.Items;
+using BeatSaber99Client.UI;
 using BS_Utils.Gameplay;
 using BS_Utils.Utilities;
 using IPA;
@@ -33,6 +34,7 @@ namespace BeatSaber99Client
             Client.Init();
             Gameplay.Init();
             Jukebox.Init();
+            ItemManager.Init();
 
             BSEvents.menuSceneLoadedFresh += () => PluginUI.Init();
             BSEvents.gameSceneActive += BSEventsOngameSceneActive;

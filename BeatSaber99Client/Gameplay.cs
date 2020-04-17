@@ -1,89 +1,119 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
+using System.Threading;
+using BeatSaber99Client.Packets;
 using BS_Utils.Utilities;
 using HarmonyLib;
 using UnityEngine;
+using ReflectionUtil = CustomUI.Utilities.ReflectionUtil;
 
 namespace BeatSaber99Client
 {
-    public static class Gameplay
+    public class Gameplay : MonoBehaviour
     {
+        private ScoreController _scoreController;
+
         public static void Init()
         {
+            new GameObject("beatsaber99_gameplay").AddComponent<Gameplay>();
+        }
+
+        void Start()
+        {
+            DontDestroyOnLoad(gameObject);
+
+
             BSEvents.energyDidChange += BSEvents_energyDidChange;
-            BSEvents.noteWasCut += BSEvents_noteWasCut;
-            BSEvents.noteWasMissed += BSEvents_noteWasMissed;
+            // BSEvents.scoreDidChange += BSEvents_scoreDidChange;
 
             BSEvents.levelFailed += BSEvents_levelFailed;
             BSEvents.levelCleared += BSEvents_levelCleared;
             BSEvents.levelQuit += BSEventsOnlevelQuit;
-            // BSEvents.scoreDidChange += BSEvents_scoreDidChange;
+
+            BSEvents.comboDidChange += BSEventsOncomboDidChange;
 
             BSEvents.levelSelected += BSEventsOnlevelSelected;
 
-            /*
-            _scoreController = Object.FindObjectOfType<ScoreController>();
-            _gameManager = Object.FindObjectOfType<StandardLevelGameplayManager>();
-            _energyCounter = Object.FindObjectOfType<GameEnergyCounter>();
-            _pauseMenuManager = Object.FindObjectOfType<PauseMenuManager>();
-            _menuTransitionsHelper = Object.FindObjectOfType<MenuTransitionsHelper>();*/
+            var t = new Thread(DataSender);
+            t.Start();
         }
 
-        private static void BSEventsOnlevelSelected(LevelCollectionViewController arg1, IPreviewBeatmapLevel arg2)
+        void Update()
+        {
+            if (Client.Status == ClientStatus.Playing &&_scoreController == null)
+            {
+                _scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
+
+                if (_scoreController != null)
+                {
+                    Plugin.log.Info("Scores hooked");
+
+                    _scoreController.scoreDidChangeEvent += (score, afterModifiers) =>
+                    {
+                        BSEvents_scoreDidChange(score);
+                    };
+                }
+            }
+        }
+
+        void DataSender()
+        {
+            while (true)
+            {
+                if (Client.Status == ClientStatus.Playing)
+                {
+                    Client.Send(new PlayerStateUpdatePacket()
+                    {
+                        CurrentCombo = SessionState.CurrentCombo,
+                        Energy = SessionState.Energy,
+                        Score = SessionState.Score,
+                    });
+                }
+
+                Thread.Sleep(1000);
+            }
+        }
+
+        private void BSEventsOnlevelSelected(LevelCollectionViewController arg1, IPreviewBeatmapLevel arg2)
         {
             Plugin.log.Info($"Selected: {arg2.songName} - {arg2.songAuthorName} ({arg2.levelID})");
         }
 
-        private static void BSEventsOnlevelQuit(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
+        private void BSEventsOnlevelQuit(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
         {
+            if (Client.Status != ClientStatus.Playing) return;
             Client.Disconnect();
         }
 
-        private static void BSEvents_levelCleared(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
+        private void BSEvents_levelCleared(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
         {
+            if (Client.Status != ClientStatus.Playing) return;
             Plugin.log.Info("Level cleared");
-
-            /*
-            if (Client.Status == ClientStatus.Playing)
-            {
-                // Loop around
-                Plugin.log.Info("Restarting level");
-
-                LevelLoader.LoadBeatmapLevelAsync(
-                    LevelLoader.StandardCharacteristic,
-                    LevelLoader.AllLevels.First(),
-                    BeatmapDifficulty.Expert,
-                    null
-                    );
-            }
-            */
-
-            // Client.Disconnect();
-        }
-
-        private static void BSEvents_levelFailed(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
-        {
             Client.Disconnect();
         }
 
-        private static void BSEvents_scoreDidChange(int obj)
+        private void BSEvents_levelFailed(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
         {
-            // Plugin.log.Info($"Score: {obj}");
+            if (Client.Status != ClientStatus.Playing) return;
+            Client.Disconnect();
         }
 
-        private static void BSEvents_noteWasMissed(NoteData arg1, int arg2)
+        private void BSEvents_scoreDidChange(int obj)
         {
-            // Plugin.log.Info($"Note missed: {arg1.id} ({arg2})");
+            if (Client.Status != ClientStatus.Playing) return;
+            SessionState.Score = obj;
         }
 
-        private static void BSEvents_noteWasCut(NoteData arg1, NoteCutInfo arg2, int arg3)
+        private void BSEventsOncomboDidChange(int obj)
         {
-            // Plugin.log.Info($"Note cut: {arg1.id} w/ saber {arg2.saberType} ({arg3})");
+            if (Client.Status != ClientStatus.Playing) return;
+            SessionState.CurrentCombo = obj;
         }
 
-
-        private static void BSEvents_energyDidChange(float obj)
+        private void BSEvents_energyDidChange(float obj)
         {
-            // Plugin.log.Info("NEW ENERGY: " + obj);
+            if (Client.Status != ClientStatus.Playing) return;
+            SessionState.Energy = obj;
         }
 
     }

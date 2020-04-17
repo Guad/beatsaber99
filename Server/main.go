@@ -13,9 +13,12 @@ var upgrader = websocket.Upgrader{}
 func clientLoop(ws *websocket.Conn) {
 	defer ws.Close()
 
-	client := Client{
-		conn: ws,
+	client := &Client{
+		conn:  ws,
+		items: &ItemManager{},
 	}
+
+	client.items.client = client
 
 	// TODO: Kick clients that dont send a ConnectionPacket in the first 10 seconds
 
@@ -35,10 +38,11 @@ func clientLoop(ws *websocket.Conn) {
 		}
 
 		packet.data = message
-		packet.Dispatch(&client)
+		packet.Dispatch(client)
 	}
 
 	log.Printf("%v has disconnected.\n", client.String())
+	client.Left()
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {

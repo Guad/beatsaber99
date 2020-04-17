@@ -1,10 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using BeatSaber99Client.Packets;
-using BeatSaberMarkupLanguage;
+using CustomUI.BeatSaber;
+using CustomUI.Utilities;
 using HMUI;
 using Polyglot;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using BeatSaberUI = BeatSaberMarkupLanguage.BeatSaberUI;
 
 namespace BeatSaber99Client.UI
 {
@@ -12,8 +18,35 @@ namespace BeatSaber99Client.UI
     {
         public static PluginUI instance;
         public static TMPro.TextMeshProUGUI hudText;
-        public static TMPro.TextMeshProUGUI ingameText;
+        public static DynamicText playersLeftText;
+        public static DynamicText winnerText;
+        public static DynamicText itemText;
         public static Button _multiplayerButton;
+
+
+        private static Coroutine _eventLogEmptyingCoroutine;
+        private float _lastMessageTime;
+        private bool _animatingEventLog;
+        private Queue<string> _eventLogQueue = new Queue<string>();
+
+        private DynamicText[] _eventLog;
+        public static string[] _log_history = new string[3];
+
+        private Vector3[] positions = new []
+        {
+            new Vector3(-2.5f, 2.3f, 8f),
+            new Vector3(-2.5f, 2.45f, 8f),
+            new Vector3(-2.5f, 2.55f, 8f),
+            new Vector3(-2.5f, 2.62f, 8f),
+        };
+
+        private float[] fontSizes = new[]
+        {
+            8.0f,
+            5.0f,
+            4.0f,
+            3.0f,
+        };
 
 
         private MainMenuViewController _mainMenuViewController;
@@ -40,36 +73,169 @@ namespace BeatSaber99Client.UI
             CreateText();
             CreateButton();
             Client.ClientStatusChanged += ClientOnClientStatusChanged;
+            
+            StartCoroutine(EnableButtonFirstLaunch());
+        }
+
+        IEnumerator EnableButtonFirstLaunch()
+        {
+            yield return new WaitForSeconds(3.0f);
+
+            _multiplayerButton.interactable = true;
         }
 
         public void SetupIngameUI()
         {
-            if (ingameText != null) return;
-
             // BeatmapObjectSpawnController
+            if (winnerText != null)
+                winnerText.Delete();
+            if (playersLeftText != null)
+                playersLeftText.Delete();
+            if (itemText != null)
+                itemText.Delete();
 
-            GameObject gameObject =
-                (Resources.FindObjectsOfTypeAll<ScoreMultiplierUIController>().FirstOrDefault() as MonoBehaviour)
-                ?.gameObject;
+            if (_eventLog != null && _eventLog.Length > 0 && _eventLog[0] != null)
+                foreach (var text in _eventLog)
+                    text.Delete();
 
-            if (gameObject == null)
+
+            winnerText = DynamicText.Create(
+                new Vector3(-2f, 2f, 8f),
+                40.0f
+            );
+
+            playersLeftText = DynamicText.Create(
+                new Vector3(2.5f, 2.5f, 6.5f),
+                8.0f
+            );
+
+            playersLeftText.text.text = "Players Left: " + SessionState.PlayersLeft;
+
+            _eventLog = new DynamicText[3];
+
+            for (int i = 0; i < _eventLog.Length; i++)
             {
-                Plugin.log.Info("Failed to hook ScoreMultiplier");
-                return;
+                _eventLog[i] = DynamicText.Create(positions[i], fontSizes[i]);
+                _eventLog[i].text.alignment = TextAlignmentOptions.Center;
+                _eventLog[i].text.text = _log_history[i] ?? "";
             }
 
-            ingameText = BeatSaberUI.CreateText(gameObject.transform as RectTransform,
-                $"Players Left: {SessionState.PlayersLeft}",
-                new Vector2(-50f, 100f));
-            ingameText.fontSize = 30f;
-            ingameText.lineSpacing = -52;
-            ingameText.gameObject.SetActive(true);
+            itemText = DynamicText.Create(
+                new Vector3(-3.5f, 3f, 6.5f),
+                8.0f
+            );
+
+            if (SessionState.CurrentItem != null)
+                SetCurrentItem(SessionState.CurrentItem);
+
+            if (_eventLogEmptyingCoroutine != null)
+                StopCoroutine(_eventLogEmptyingCoroutine);
+
+            _eventLogEmptyingCoroutine = StartCoroutine(RemoveOldMessagesCoroutine());
         }
+
+        IEnumerator RemoveOldMessagesCoroutine()
+        {
+            while (Client.Status == ClientStatus.Playing)
+            {
+                if (Time.time - _lastMessageTime > 5.0f)
+                {
+                    PushEventLog("");
+                }
+
+                yield return new WaitForSeconds(3f);
+            }
+        }
+
+        public void PushEventLog(string newtext)
+        {
+            _lastMessageTime = Time.time;
+            _eventLogQueue.Enqueue(newtext);
+
+            if (!_animatingEventLog)
+                StartCoroutine(AnimateEventLogs());
+        }
+
+        public void SetCurrentItem(string item)
+        {
+            if (itemText == null) return;
+
+            if (item == null)
+            {
+                itemText.text.text = "";
+            }
+            else
+            {
+                itemText.text.text = "Current Item:\n" + item;
+            }
+        }
+
+        private IEnumerator AnimateEventLogs()
+        {
+            _animatingEventLog = true;
+
+            do
+            {
+                string newText = _eventLogQueue.Dequeue();
+
+                const float animationTime = 0.7f;
+                float start = Time.time;
+                float now = Time.time;
+
+                while (now < start + animationTime)
+                {
+                    now = Time.time;
+                    float delta = (now - start) / animationTime;
+                    if (delta > 1.0f) delta = 1.0f;
+
+                    delta = Mathf.Sin(delta * (Mathf.PI / 2.0f));
+
+                    for (int i = 0; i < _eventLog.Length; i++)
+                    {
+                        float newfont = delta * (fontSizes[i + 1] - fontSizes[i]) + fontSizes[i];
+                        Vector3 newpos = delta * (positions[i + 1] - positions[i]) + positions[i];
+
+                        _eventLog[i].text.fontSize = newfont;
+                        _eventLog[i].SetPosition(newpos);
+                    }
+
+                    yield return new WaitForEndOfFrame();
+                }
+
+                for (int i = _eventLog.Length - 1; i >= 0; i--)
+                {
+                    _eventLog[i].text.text = i == 0 ? newText : _eventLog[i - 1].text.text;
+                    _log_history[i] = _eventLog[i].text.text;
+                    _eventLog[i].text.fontSize = fontSizes[i];
+                    _eventLog[i].SetPosition(positions[i]);
+                }
+            } while (_eventLogQueue.Count > 0);
+
+            _animatingEventLog = false;
+        }
+
 
         public void UpdatePlayersLeftText(int left)
         {
-            if (ingameText != null)
-                ingameText.text = $"Players Left: {left}";
+            Plugin.log.Info($"Updated player count: {left}");
+
+            if (playersLeftText != null)
+            {
+                playersLeftText.text.text = "Players Left: " + left;
+            }
+        }
+
+        public void SetWinnerText(bool active)
+        {
+            if (winnerText != null)
+            {
+                winnerText.text.text = active ? "Victory Royale!" : "";
+            }
+
+            if (active)
+            {
+                Client.Disconnect();
+            }
         }
 
         private void ClientOnClientStatusChanged(object sender, ClientStatus e)
@@ -78,7 +244,11 @@ namespace BeatSaber99Client.UI
             {
                 case ClientStatus.Waiting:
                     hudText.gameObject.SetActive(false);
-                    _multiplayerButton.SetButtonText(ButtonText);
+                    playersLeftText?.gameObject.SetActive(false);
+                    SetCurrentItem(null);
+                    SetWinnerText(false);
+
+                    BeatSaberUI.SetButtonText(_multiplayerButton, ButtonText);
                     _multiplayerButton.interactable = true;
                     break;
                 case ClientStatus.Connecting:
@@ -88,10 +258,12 @@ namespace BeatSaber99Client.UI
                     break;
                 case ClientStatus.Matchmaking:
                     hudText.text = "Matchmaking...";
-                    _multiplayerButton.SetButtonText("CANCEL");
+                    BeatSaberUI.SetButtonText(_multiplayerButton, "CANCEL");
                     _multiplayerButton.interactable = true;
+                    SetWinnerText(false);
                     break;
                 case ClientStatus.Playing:
+                    _log_history = new string[3];
                     hudText.text = "Starting...";
                     break;
             }
@@ -126,10 +298,10 @@ namespace BeatSaber99Client.UI
             _multiplayerButton.transform.SetParent(mainButtons.First(x => x.name == "SoloFreePlayButton").transform.parent);
             _multiplayerButton.transform.SetAsLastSibling();
 
-            _multiplayerButton.SetButtonText(ButtonText);
+            BeatSaberUI.SetButtonText(_multiplayerButton, ButtonText);
             //_multiplayerButton.SetButtonIcon(Sprites.onlineIcon);
 
-            _multiplayerButton.interactable = true;
+            _multiplayerButton.interactable = false;
 
             _multiplayerButton.onClick = new Button.ButtonClickedEvent();
             _multiplayerButton.onClick.AddListener(delegate ()

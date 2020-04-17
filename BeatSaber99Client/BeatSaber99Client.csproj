@@ -171,6 +171,18 @@
     <Reference Include="UnityEngine.HotReloadModule">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -186,6 +198,10 @@
     <Reference Include="UnityEngine.VRModule">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.VRModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
     <Reference Include="VRUI">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\VRUI.dll</HintPath>
     </Reference>
@@ -199,25 +215,34 @@
     <Compile Include="Executor.cs" />
     <Compile Include="Gameplay.cs" />
     <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="Items\ItemManager.cs" />
     <Compile Include="Jukebox.cs" />
     <Compile Include="LevelLoader.cs" />
+    <Compile Include="Packets\ActivateItemPacket.cs" />
     <Compile Include="Packets\ConnectionPacket.cs" />
     <Compile Include="Packets\EnqueueSongPacket.cs" />
+    <Compile Include="Packets\GiveItemPacket.cs" />
     <Compile Include="Packets\IPacket.cs" />
     <Compile Include="Packets\PlayersLeftPacket.cs" />
-    <Compile Include="Packets\SessionState.cs" />
+    <Compile Include="Packets\UseItemPacket.cs" />
+    <Compile Include="SessionState.cs" />
     <Compile Include="Packets\StartPacket.cs" />
+    <Compile Include="Packets\WinnerPacket.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PreloadedLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Packets\EventLogPacket.cs" />
     <Compile Include="UI\ExampleViewController.cs" />
+    <Compile Include="UI\DynamicText.cs" />
+    <Compile Include="Packets\PlayerStateUpdatePacket.cs" />
     <Compile Include="UI\PluginUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />
     <None Include="packages.config" />
-    <None Include="UI\ViewControllers\example.bsml" />
+    <EmbeddedResource Include="UI\ViewControllers\example.bsml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "A:\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Plugins\$(TargetName).dll"</PostBuildEvent>

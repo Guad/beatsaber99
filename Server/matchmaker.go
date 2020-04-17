@@ -15,8 +15,8 @@ var mainMatchmaker *Matchmaker
 var MinPlayersForSession = 1
 
 func startSession(session *Session) {
-	session.RLock()
-	defer session.RUnlock()
+	// session.RLock()
+	// defer session.RUnlock()
 
 	log.Println("Starting session...")
 
@@ -33,6 +33,7 @@ func startSession(session *Session) {
 			Type:           "EnqueueSongPacket",
 			Characteristic: "Standard",
 			Difficulty:     "Expert",
+			Speed:          1.0 + 0.1*float64(i),
 			LevelID:        pickRandomSong(),
 		})
 	}
@@ -60,6 +61,7 @@ func matchmake() {
 
 			currentSession.Lock()
 			currentSession.players = append(currentSession.players, player)
+			player.session = currentSession
 			currentSession.Unlock()
 		}
 
