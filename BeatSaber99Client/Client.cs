@@ -30,8 +30,8 @@ namespace BeatSaber99Client
         }
         public static event EventHandler<ClientStatus> ClientStatusChanged;
 
-        //private const string Address = "ws://127.0.0.1:6969/ws";
-        private const string Address = "wss://beatsaber.kolhos.chichasov.es/ws";
+        private const string Address = "ws://127.0.0.1:6969/ws";
+        //private const string Address = "wss://beatsaber.kolhos.chichasov.es/ws";
 
         private static WebSocket _client;
         private static Dictionary<string, Type> _packetTypes = new Dictionary<string, Type>();
@@ -105,7 +105,7 @@ namespace BeatSaber99Client
             if (type != null && _packetTypes.TryGetValue(type, out var packetType))
             {
                 var packet = json.ToObject(packetType) as IPacket;
-                Executor.Enqueue(async () => packet?.Dispatch());
+                Executor.Enqueue(() => packet?.Dispatch());
             }
         }
 

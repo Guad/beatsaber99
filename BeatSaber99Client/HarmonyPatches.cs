@@ -13,7 +13,7 @@ namespace BeatSaber99Client
         public static void Patch()
         {
             if (instance == null)
-                instance = new Harmony("com.guad.testmod");
+                instance = new Harmony("com.guad.beatsaber99");
 
             Plugin.log.Info("Patching with harmony...");
 
@@ -36,6 +36,21 @@ namespace BeatSaber99Client
 
 namespace BeatSaber99Client.OverriddenClasses
 {
+    [HarmonyPatch(typeof(RichPresenceManager))]
+    [HarmonyPatch("HandleGameScenesManagerTransitionDidFinish")]
+    class RichPresenceBugFix
+    {
+        static bool Prefix()
+        {
+            if (Client.Status == ClientStatus.Playing)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(PauseController))]
     [HarmonyPatch("Pause")]
     public class GameplayManagerPausePatch

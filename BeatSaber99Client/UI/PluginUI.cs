@@ -19,11 +19,13 @@ namespace BeatSaber99Client.UI
         private MainMenuViewController _mainMenuViewController;
         private RectTransform _mainMenuRectTransform;
 
+        private const string ButtonText = "SABER99";
+
         public static void Init()
         {
             if (instance == null)
             {
-                instance = new GameObject("testmod").AddComponent<PluginUI>();
+                instance = new GameObject("beatsaber99_ui").AddComponent<PluginUI>();
                 instance.Setup();
             }
         }
@@ -66,7 +68,8 @@ namespace BeatSaber99Client.UI
 
         public void UpdatePlayersLeftText(int left)
         {
-            ingameText.text = $"Players Left: {left}";
+            if (ingameText != null)
+                ingameText.text = $"Players Left: {left}";
         }
 
         private void ClientOnClientStatusChanged(object sender, ClientStatus e)
@@ -75,6 +78,7 @@ namespace BeatSaber99Client.UI
             {
                 case ClientStatus.Waiting:
                     hudText.gameObject.SetActive(false);
+                    _multiplayerButton.SetButtonText(ButtonText);
                     _multiplayerButton.interactable = true;
                     break;
                 case ClientStatus.Connecting:
@@ -84,6 +88,8 @@ namespace BeatSaber99Client.UI
                     break;
                 case ClientStatus.Matchmaking:
                     hudText.text = "Matchmaking...";
+                    _multiplayerButton.SetButtonText("CANCEL");
+                    _multiplayerButton.interactable = true;
                     break;
                 case ClientStatus.Playing:
                     hudText.text = "Starting...";
@@ -114,13 +120,13 @@ namespace BeatSaber99Client.UI
                 Resources.FindObjectsOfTypeAll<Button>()
                     .Last(x => (x.name == "SoloFreePlayButton")),
                 _mainMenuRectTransform, false);
-            _multiplayerButton.name = "BSMultiplayerButton";
+            _multiplayerButton.name = "BS99Button";
             Destroy(_multiplayerButton.GetComponentInChildren<LocalizedTextMeshProUGUI>());
             Destroy(_multiplayerButton.GetComponentInChildren<HoverHint>());
             _multiplayerButton.transform.SetParent(mainButtons.First(x => x.name == "SoloFreePlayButton").transform.parent);
             _multiplayerButton.transform.SetAsLastSibling();
 
-            _multiplayerButton.SetButtonText("SABER99");
+            _multiplayerButton.SetButtonText(ButtonText);
             //_multiplayerButton.SetButtonIcon(Sprites.onlineIcon);
 
             _multiplayerButton.interactable = true;
@@ -134,7 +140,14 @@ namespace BeatSaber99Client.UI
 
         private void BattleRoyaleClicked()
         {
-            Client.ConnectAndMatchmake();
+            if (Client.Status == ClientStatus.Matchmaking)
+            {
+                Client.Disconnect();
+            }
+            else
+            {
+                Client.ConnectAndMatchmake();
+            }
         }
     }
 }

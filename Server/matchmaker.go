@@ -1,6 +1,10 @@
 package main
 
-import "log"
+import (
+	"log"
+	"os"
+	"strconv"
+)
 
 type Matchmaker struct {
 	queue chan *Client
@@ -8,34 +12,55 @@ type Matchmaker struct {
 
 var mainMatchmaker *Matchmaker
 
-const MinPlayersForSession = 1
+var MinPlayersForSession = 1
 
-func startSession(players []*Client) {
+func startSession(session *Session) {
+	session.RLock()
+	defer session.RUnlock()
+
 	log.Println("Starting session...")
 
-	sesh := &Session{
-		players: players,
-	}
-
-	sesh.Send(StartPacket{
-		TotalPlayers: len(players),
+	session.Send(StartPacket{
+		TotalPlayers: len(session.players),
 		Type:         "StartPacket",
 		Difficulty:   "Expert",
-		LevelID:      "100Bills",
+		LevelID:      pickRandomSong(),
 	})
+
+	// 5 songs queue
+	for i := 0; i < 5; i++ {
+		session.Send(EnqueueSongPacket{
+			Type:           "EnqueueSongPacket",
+			Characteristic: "Standard",
+			Difficulty:     "Expert",
+			LevelID:        pickRandomSong(),
+		})
+	}
+
+	session.state = Playing
 }
 
 func matchmake() {
+	if val, ok := os.LookupEnv("MATCHMAKER_MIN_PLAYERS"); ok {
+		MinPlayersForSession, _ = strconv.Atoi(val)
+	}
+
 	mainMatchmaker = &Matchmaker{
 		queue: make(chan *Client),
 	}
 
 	for {
-		currentSession := make([]*Client, 0, MinPlayersForSession)
+		currentSession := &Session{
+			players: make([]*Client, 0, MinPlayersForSession),
+			state:   Matchmaking,
+		}
 
-		for len(currentSession) < MinPlayersForSession {
+		for len(currentSession.players) < MinPlayersForSession {
 			player := <-mainMatchmaker.queue
-			currentSession = append(currentSession, player)
+
+			currentSession.Lock()
+			currentSession.players = append(currentSession.players, player)
+			currentSession.Unlock()
 		}
 
 		startSession(currentSession)

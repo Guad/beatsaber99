@@ -10,10 +10,13 @@ namespace BeatSaber99Client.Packets
 
         public void Dispatch()
         {
-            Client.Status = ClientStatus.Playing;
             SessionState.PlayersLeft = TotalPlayers;
             var level = LevelLoader.AllLevels.First(lvl => lvl.levelID == LevelID);
             LevelLoader.LoadBeatmapLevelAsync(LevelLoader.StandardCharacteristic, level, Difficulty, null);
+
+            Jukebox.instance.TrackSong(level.songDuration);
+
+            Client.Status = ClientStatus.Playing;
         }
     }
 }

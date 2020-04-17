@@ -49,3 +49,10 @@ type PlayersLeftPacket struct {
 	Type         string `json:"type,omitempty"`
 	TotalPlayers int    `json:"TotalPlayers,omitempty"`
 }
+
+type EnqueueSongPacket struct {
+	Type           string `json:"type,omitempty"`
+	Characteristic string `json:"Characteristic,omitempty"`
+	LevelID        string `json:"LevelID,omitempty"`
+	Difficulty     string `json:"Difficulty,omitempty"`
+}

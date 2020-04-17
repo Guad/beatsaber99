@@ -9,22 +9,22 @@ namespace BeatSaber99Client
     {
         public static void Init()
         {
-            new GameObject("tcp_server_executor").AddComponent<Executor>();
+            new GameObject("beatsaber99_executor").AddComponent<Executor>();
         }
 
-        private static ConcurrentQueue<Func<Task>> _actions = new ConcurrentQueue<Func<Task>>();
+        private static ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
-        public static void Enqueue(Func<Task> action)
+        public static void Enqueue(Action action)
         {
             _actions.Enqueue(action);
         }
 
-        public async void Update()
+        public void Update()
         {
             while (_actions.Count > 0)
             {
                 if (_actions.TryDequeue(out var result))
-                    await result();
+                    result();
                     
             }
         }

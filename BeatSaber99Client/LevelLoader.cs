@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BeatSaber99Client
 {
@@ -75,10 +77,6 @@ namespace BeatSaber99Client
 
             MenuTransitionsHelper menuSceneSetupData = Resources.FindObjectsOfTypeAll<MenuTransitionsHelper>().FirstOrDefault();
 
-            /*if (_playerManagementViewController != null)
-            {
-                _playerManagementViewController.SetGameplayModifiers(modifiers);
-            }*/
 
             if (menuSceneSetupData != null)
             {
@@ -131,10 +129,136 @@ namespace BeatSaber99Client
                     modifiers,
                     playerSettings,
                     practiceSettings,
-                    "Lobby",
+                    "Menu",
                     false,
                     () => { },
-                    (manager, result) => { });
+                    (manager, result) =>
+                    {
+                        
+                    });
+            }
+            else
+            {
+                Plugin.log.Error("SceneSetupData is null!");
+            }
+        }
+
+        public static async void PreloadBeatmapLevelAsync(
+            BeatmapCharacteristicSO characteristic,
+            IPreviewBeatmapLevel selectedLevel,
+            BeatmapDifficulty difficulty,
+            GameplayModifiers modifiers,
+            Action<PreloadedLevel> callback)
+        {
+            var token = new CancellationTokenSource();
+
+            Plugin.log.Info("Checking entitlement");
+
+            var entitlementStatus = await _contentModelSO.GetLevelEntitlementStatusAsync(selectedLevel.levelID, token.Token);
+
+            if (entitlementStatus == AdditionalContentModel.EntitlementStatus.Owned)
+            {
+                Plugin.log.Info("Level owned. Loading...");
+
+                BeatmapLevelsModel.GetBeatmapLevelResult getBeatmapLevelResult = await _beatmapLevelsModel.GetBeatmapLevelAsync(selectedLevel.levelID, token.Token);
+
+                Plugin.log.Info("Level preload complete.");
+
+                if (getBeatmapLevelResult.isError)
+                {
+                    callback?.Invoke(null);
+                    return;
+                }
+
+                PlayerData playerData = Resources.FindObjectsOfTypeAll<PlayerDataModel>().FirstOrDefault().playerData;
+
+                PlayerSpecificSettings playerSettings = playerData.playerSpecificSettings;
+                OverrideEnvironmentSettings environmentOverrideSettings = playerData.overrideEnvironmentSettings;
+
+                var colorSchemesSettings = playerData.colorSchemesSettings.overrideDefaultColors ?
+                    playerData.colorSchemesSettings.GetColorSchemeForId(playerData.colorSchemesSettings.selectedColorSchemeId) : null;
+
+
+                IDifficultyBeatmap difficultyBeatmap = getBeatmapLevelResult.beatmapLevel.GetDifficultyBeatmap(characteristic, difficulty, false);
+
+
+                callback?.Invoke(new PreloadedLevel()
+                {
+                    characteristic = characteristic,
+                    levelResult = getBeatmapLevelResult,
+                    modifiers = modifiers,
+                    difficulty = difficultyBeatmap,
+                    playerData = playerData,
+                    playerSpecificSettings = playerSettings,
+                    environmentSettings = environmentOverrideSettings,
+                    colorScheme = colorSchemesSettings,
+                });
+            }
+            else
+            {
+                callback?.Invoke(null);
+            }
+        }
+
+        public static void SwitchLevel(PreloadedLevel level, float startTime = 0f)
+        {
+            MenuTransitionsHelper menuSceneSetupData =
+                Resources.FindObjectsOfTypeAll<MenuTransitionsHelper>().FirstOrDefault();
+
+            
+
+            if (menuSceneSetupData != null)
+            {
+                
+
+                Plugin.log.Debug($"Starting song: name={level.levelResult.beatmapLevel.songName}, levelId={level.levelResult.beatmapLevel.levelID}");
+
+                try
+                {
+                    BS_Utils.Gameplay.Gamemode.NextLevelIsIsolated("TestMod");
+                }
+                catch
+                {
+
+                }
+
+                PracticeSettings practiceSettings = null;
+                if (startTime > 1f)
+                {
+                    practiceSettings = new PracticeSettings(PracticeSettings.defaultPracticeSettings);
+                    if (startTime > 1f)
+                    {
+                        practiceSettings.startSongTime = startTime + 1.5f;
+                        practiceSettings.startInAdvanceAndClearNotes = true;
+                    }
+
+                    practiceSettings.songSpeedMul = level.modifiers.songSpeedMul;
+                }
+
+                // var scoreSaber = IPA.Loader.PluginManager.GetPluginFromId("ScoreSaber");
+
+                // if (scoreSaber != null)
+                // {
+                    // ScoreSaberInterop.InitAndSignIn();
+                // }
+
+                var transition = Resources.FindObjectsOfTypeAll<StandardLevelScenesTransitionSetupDataSO>().First();
+                transition.Init(
+                    level.difficulty,
+                    level.environmentSettings,
+                    level.colorScheme,
+                    level.modifiers,
+                    level.playerSpecificSettings,
+                    practiceSettings,
+                    "Menu",
+                    false);
+                var _gameScenesManager = Object.FindObjectOfType<GameScenesManager>();
+
+                _gameScenesManager.PopScenes(0f, null, () =>
+                {
+                    _gameScenesManager.PushScenes(transition, 0.0f);
+                });
+
             }
             else
             {
