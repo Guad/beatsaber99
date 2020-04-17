@@ -24,6 +24,7 @@ namespace BeatSaber99Client
 
 
             BSEvents.energyDidChange += BSEvents_energyDidChange;
+            BSEvents.energyReachedZero += BSEventsOnenergyReachedZero;
             // BSEvents.scoreDidChange += BSEvents_scoreDidChange;
 
             BSEvents.levelFailed += BSEvents_levelFailed;
@@ -89,6 +90,12 @@ namespace BeatSaber99Client
         {
             if (Client.Status != ClientStatus.Playing) return;
             Plugin.log.Info("Level cleared");
+            Client.Disconnect();
+        }
+
+        private void BSEventsOnenergyReachedZero()
+        {
+            if (Client.Status != ClientStatus.Playing) return;
             Client.Disconnect();
         }
 

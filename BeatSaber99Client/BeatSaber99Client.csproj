@@ -61,12 +61,19 @@
     <Reference Include="Main">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\Main.dll</HintPath>
     </Reference>
+    <Reference Include="MediaLoader, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\MediaLoader.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Polyglot">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\Polyglot.dll</HintPath>
+    </Reference>
+    <Reference Include="SongCore">
+      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Plugins\SongCore.dll</HintPath>
     </Reference>
     <Reference Include="SuperSocket.ClientEngine, Version=0.10.0.0, Culture=neutral, PublicKeyToken=ee9af13f57f00acc, processorArchitecture=MSIL">
       <HintPath>..\packages\SuperSocket.ClientEngine.Core.0.10.0\lib\net45\SuperSocket.ClientEngine.dll</HintPath>
@@ -84,6 +91,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Linq, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Linq.4.3.0\lib\net463\System.Linq.dll</HintPath>
       <Private>True</Private>
@@ -162,6 +170,10 @@
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
@@ -212,6 +224,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="ClientStatus.cs" />
+    <Compile Include="CustomSongInjector.cs" />
     <Compile Include="Executor.cs" />
     <Compile Include="Gameplay.cs" />
     <Compile Include="HarmonyPatches.cs" />
@@ -232,7 +245,6 @@
     <Compile Include="PreloadedLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Packets\EventLogPacket.cs" />
-    <Compile Include="UI\ExampleViewController.cs" />
     <Compile Include="UI\DynamicText.cs" />
     <Compile Include="Packets\PlayerStateUpdatePacket.cs" />
     <Compile Include="UI\PluginUI.cs" />
@@ -240,7 +252,6 @@
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="UI\ViewControllers\example.bsml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

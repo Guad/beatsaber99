@@ -15,7 +15,7 @@ namespace BeatSaber99Client.Items
         public static float? Invulnerable = null;
         public static float AddHealthNextFrame;
 
-        public float? _triggerHelddownStart;
+        public float _triggerLastPush = 0;
         private GameEnergyCounter _gameEnergyCounter;
 
         public static void Init()
@@ -83,15 +83,10 @@ namespace BeatSaber99Client.Items
 
             float trigger = Mathf.Max(Input.GetAxis("TriggerRightHand"), Input.GetAxis("TriggerLeftHand"));
 
-            if (trigger > 0.6)
+            if (trigger > 0.6 && Time.time - _triggerLastPush > 1.5f)
             {
-                if (_triggerHelddownStart == null)
-                    _triggerHelddownStart = Time.time;
-                else if (Time.time - _triggerHelddownStart.Value > 1.0f)
-                {
-                    _triggerHelddownStart = null;
-                    UseCurrentItem();
-                }
+                UseCurrentItem();
+                _triggerLastPush = Time.time;
             }
         }
 

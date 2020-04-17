@@ -8,6 +8,7 @@ namespace BeatSaber99Client.Packets
         {
             Plugin.log.Info("Winner packet received.");
             PluginUI.instance.SetWinnerText(true);
+            Client.Disconnect();
         }
     }
 }

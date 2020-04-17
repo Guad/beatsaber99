@@ -228,14 +228,7 @@ namespace BeatSaber99Client.UI
         public void SetWinnerText(bool active)
         {
             if (winnerText != null)
-            {
                 winnerText.text.text = active ? "Victory Royale!" : "";
-            }
-
-            if (active)
-            {
-                Client.Disconnect();
-            }
         }
 
         private void ClientOnClientStatusChanged(object sender, ClientStatus e)

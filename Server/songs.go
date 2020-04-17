@@ -34,3 +34,15 @@ var AllSongsIDs = []string{
 	"CycleHit",
 	"WhatTheCat",
 }
+
+var CustomSongsIDs = []string{
+	"bsaber.com/9956",
+	"bsaber.com/8fc3",
+	"bsaber.com/8e13",
+	"bsaber.com/8799",
+	"bsaber.com/8553",
+	"bsaber.com/2144",
+	"bsaber.com/1fef",
+	"bsaber.com/133b",
+	"bsaber.com/2087",
+}

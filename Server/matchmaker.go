@@ -34,7 +34,8 @@ func startSession(session *Session) {
 			Characteristic: "Standard",
 			Difficulty:     "Expert",
 			Speed:          1.0 + 0.1*float64(i),
-			LevelID:        pickRandomSong(),
+			// LevelID:        pickRandomSong(),
+			LevelID: pickRandomCustomSong(),
 		})
 	}
 

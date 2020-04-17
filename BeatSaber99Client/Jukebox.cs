@@ -69,23 +69,53 @@ namespace BeatSaber99Client
                 songPreloaded = true;
 
                 var characteristic = LevelLoader.Characteristics.First(c => c.serializedName == song.Characteristic);
-                var level = LevelLoader.AllLevels.First(l => l.levelID == song.LevelID);
                 var gameplay = GameplayModifiers.defaultModifiers;
 
 
-                LevelLoader.PreloadBeatmapLevelAsync(
-                    characteristic,
-                    level,
-                    song.Difficulty,
-                    gameplay,
-                    (preloadedLevel) =>
-                    {
-                        nextLevel = preloadedLevel;
+                if (song.LevelID.StartsWith("bsaber.com/"))
+                {
+                    var split = song.LevelID.Split('/');
+                    CustomSongInjector.StartSongDownload("https://beatsaver.com/api/download/key/" + split[1],
+                        (level) =>
+                        {
+                            LevelLoader.PreloadBeatmapLevelAsync(
+                                characteristic,
+                                level,
+                                song.Difficulty,
+                                gameplay,
+                                (preloadedLevel) =>
+                                {
+                                    if (preloadedLevel == null)
+                                    {
+                                        Plugin.log.Info("Level did not preload correctly..");
+                                        return;
+                                    }
 
-                        nextLevel.speed = (float)song.Speed;
-                        Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
-                    }
-                );
+                                    nextLevel = preloadedLevel;
+                                    nextLevel.speed = (float)song.Speed;
+
+                                    Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
+                                }
+                            );
+                        });
+                }
+                else
+                {
+                    var level = LevelLoader.AllLevels.First(l => l.levelID == song.LevelID);
+                    LevelLoader.PreloadBeatmapLevelAsync(
+                        characteristic,
+                        level,
+                        song.Difficulty,
+                        gameplay,
+                        (preloadedLevel) =>
+                        {
+                            nextLevel = preloadedLevel;
+
+                            nextLevel.speed = (float)song.Speed;
+                            Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
+                        }
+                    );
+                }
             }
         }
 
@@ -96,8 +126,18 @@ namespace BeatSaber99Client
                 Plugin.log.Info("Loading next level");
                 if (nextLevel != null)
                 {
+                    float duration = nextLevel.levelResult.beatmapLevel.songDuration;
+
+                    if (duration < 1f)
+                    {
+                        var c = nextLevel.levelResult.beatmapLevel.beatmapLevelData.audioClip;
+                        duration = c.length;
+                    }
+
+                    Plugin.log.Info($"Next level song duration: {duration}");
+
+                    TrackSong(duration / nextLevel.speed);
                     LevelLoader.SwitchLevel(nextLevel);
-                    TrackSong(nextLevel.levelResult.beatmapLevel.songDuration / nextLevel.speed);
                     songPreloaded = false;
                     nextLevel = null;
                     Plugin.log.Info("Level switched.");

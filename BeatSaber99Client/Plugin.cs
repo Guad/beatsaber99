@@ -36,11 +36,17 @@ namespace BeatSaber99Client
             Jukebox.Init();
             ItemManager.Init();
 
-            BSEvents.menuSceneLoadedFresh += () => PluginUI.Init();
+            BSEvents.menuSceneLoadedFresh += BSEventsOnmenuSceneLoadedFresh;
             BSEvents.gameSceneActive += BSEventsOngameSceneActive;
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 
             log.Info("Beat Saber 99 started");
+        }
+
+        private void BSEventsOnmenuSceneLoadedFresh()
+        {
+            LevelLoader.Init();
+            CustomSongInjector.Init();
         }
 
         private void BSEventsOngameSceneActive()
@@ -55,7 +61,7 @@ namespace BeatSaber99Client
 
             if (to.name.ToLower().Contains("menu"))
             {
-                LevelLoader.Init();
+                PluginUI.Init();
             }
         }
 

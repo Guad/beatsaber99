@@ -10,3 +10,10 @@ func pickRandomSong() string {
 
 	return song
 }
+
+func pickRandomCustomSong() string {
+	choice := rand.Intn(len(CustomSongsIDs))
+	song := CustomSongsIDs[choice]
+
+	return song
+}

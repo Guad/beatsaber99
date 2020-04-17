@@ -186,6 +186,16 @@ namespace BeatSaber99Client
 
             Plugin.log.Info("Checking entitlement");
 
+            var previewCache = _beatmapLevelsModel
+                .GetPrivateField<Dictionary<string, IPreviewBeatmapLevel>>("_loadedPreviewBeatmapLevels");
+
+            if (!previewCache.ContainsKey(selectedLevel.levelID))
+            {
+                previewCache.Add(selectedLevel.levelID, selectedLevel);
+                _beatmapLevelsModel.SetPrivateField("_loadedPreviewBeatmapLevels", previewCache);
+                Plugin.log.Info("Updated internal cache");
+            }
+
             var entitlementStatus =
                 await _contentModelSO.GetLevelEntitlementStatusAsync(selectedLevel.levelID, token.Token);
 
@@ -200,24 +210,31 @@ namespace BeatSaber99Client
 
                 if (getBeatmapLevelResult.isError)
                 {
+                    Plugin.log.Info("Beatmap level load failure.");
                     callback?.Invoke(null);
                     return;
                 }
 
+                Plugin.log.Info("Level preload 1.");
                 var playerData = Resources.FindObjectsOfTypeAll<PlayerDataModel>().FirstOrDefault().playerData;
+                Plugin.log.Info("Level preload 2.");
 
                 var playerSettings = playerData.playerSpecificSettings;
+                Plugin.log.Info("Level preload 3.");
                 var environmentOverrideSettings = playerData.overrideEnvironmentSettings;
+                Plugin.log.Info("Level preload 4.");
 
                 var colorSchemesSettings = playerData.colorSchemesSettings.overrideDefaultColors
                     ? playerData.colorSchemesSettings.GetColorSchemeForId(playerData.colorSchemesSettings
                         .selectedColorSchemeId)
                     : null;
 
+                Plugin.log.Info("Level preload 5.");
 
                 var difficultyBeatmap =
                     getBeatmapLevelResult.beatmapLevel.GetDifficultyBeatmap(characteristic, difficulty, false);
 
+                Plugin.log.Info("Level preload 6.");
 
                 callback?.Invoke(new PreloadedLevel()
                 {
