@@ -10,6 +10,7 @@ type SessionState int
 const (
 	Matchmaking SessionState = iota
 	Playing
+	Finished
 )
 
 type Session struct {
@@ -17,6 +18,18 @@ type Session struct {
 
 	players []*Client
 	state   SessionState
+}
+
+func (s *Session) StartSession() {
+	s.RLock()
+	defer s.RUnlock()
+
+	for _, player := range s.players {
+		player.state = PlayingClientState
+	}
+
+	s.state = Playing
+	go StartIdlekickerForSession(s)
 }
 
 func (s *Session) Send(data interface{}) {
@@ -70,6 +83,6 @@ func (s *Session) RemovePlayer(player *Client) {
 	}
 }
 
-func (s Session) Destroy() {
-	// TODO
+func (s *Session) Destroy() {
+	s.state = Finished
 }

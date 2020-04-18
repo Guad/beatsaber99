@@ -23,10 +23,10 @@ var funnyKillMessages = []string{
 }
 
 var funnyComboBreakMessages = []string{
-	"%v broke their combo!",
+	"%v lost their combo!",
 	"%v screwed up their streak!",
 	"%v lost their streak!",
-	"%v screwed the pooch!",
+	"%v messed up their combo!",
 }
 
 var funnyOnFireMessage = []string{

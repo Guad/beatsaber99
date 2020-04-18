@@ -39,7 +39,7 @@ func startSession(session *Session) {
 		})
 	}
 
-	session.state = Playing
+	session.StartSession()
 }
 
 func matchmake() {
@@ -59,6 +59,10 @@ func matchmake() {
 
 		for len(currentSession.players) < MinPlayersForSession {
 			player := <-mainMatchmaker.queue
+
+			if player.state != MatchmakingClientState {
+				continue
+			}
 
 			currentSession.Lock()
 			currentSession.players = append(currentSession.players, player)

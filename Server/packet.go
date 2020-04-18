@@ -42,6 +42,7 @@ type ConnectionPacket struct {
 func (p ConnectionPacket) Dispatch(sender *Client) {
 	sender.name = p.Name
 	sender.id = p.ID
+	sender.state = MatchmakingClientState
 
 	log.Printf("%v has connected.\n", sender.String())
 
@@ -91,6 +92,7 @@ func (p PlayerStateUpdatePacket) Dispatch(player *Client) {
 
 	createFunnyMessageForStateUpdate(player, p)
 	player.lastState = p
+	player.updateScore()
 }
 
 type GiveItemPacket struct {
