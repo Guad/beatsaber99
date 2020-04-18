@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -64,9 +65,8 @@ func clientLoop(ws *websocket.Conn, realip string) {
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
+	realip := getClientIP(r)
 	ws, err := upgrader.Upgrade(w, r, nil)
-
-	realip := r.Header.Get("X-Forwarded-For")
 
 	if err != nil {
 		log.Println("upgrade error:", err)
@@ -75,4 +75,17 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 
 	defer ws.Close()
 	clientLoop(ws, realip)
+}
+
+func getClientIP(r *http.Request) string {
+	if r.Header.Get("X-Forwarded-For") != "" {
+		s := strings.Split(r.Header.Get("X-Forwarded-For"), " ")
+		return s[len(s)-1]
+	}
+
+	if r.Header.Get("X-Real-Ip") != "" {
+		return r.Header.Get("X-Real-Ip")
+	}
+
+	return ""
 }
