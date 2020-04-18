@@ -15,5 +15,6 @@
         public const string SendBombs = "Send Bombs (5s)";
         public const string GhostNotes = "Ghost Notes (5s)";
         public const string GhostArrows = "Ghost Arrows (5s)";
+        public const string Drain = "Drain (5s)";
     }
 }

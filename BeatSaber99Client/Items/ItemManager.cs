@@ -15,6 +15,7 @@ namespace BeatSaber99Client.Items
         public static float? Invulnerable = null;
         public static float? Shield = null;
         public static float? Poison = null;
+        public static float? Drain = null;
         private static float? _oldEnergy;
 
         public static float AddHealthNextFrame;
@@ -94,6 +95,18 @@ namespace BeatSaber99Client.Items
                 else if (_gameEnergyCounter.energy > 0f)
                     _gameEnergyCounter.AddEnergy(0.05f - _gameEnergyCounter.energy);
             }
+            else if (Drain.HasValue)
+            {
+                if (Time.time - Drain.Value > ItemDuration)
+                {
+                    Drain = null;
+                    PluginUI.instance.SetEnergyBarColor(Color.white);
+                }
+                else
+                {
+                    _gameEnergyCounter.AddEnergy(-DrainPerSecond * Time.deltaTime);
+                }
+            }
             else if (Poison.HasValue)
             {
                 if (Time.time - Poison.Value > ItemDuration)
@@ -112,7 +125,6 @@ namespace BeatSaber99Client.Items
                 }
                 else
                 {
-                    _gameEnergyCounter.AddEnergy();
                     _oldEnergy = _gameEnergyCounter.energy;
                 }
             }
@@ -168,6 +180,7 @@ namespace BeatSaber99Client.Items
                 case ItemTypes.SendBombs:
                 case ItemTypes.GhostArrows:
                 case ItemTypes.GhostNotes:
+                case ItemTypes.Drain:
                     break;
                 default:
                     ActivateItem(SessionState.CurrentItem);
@@ -189,6 +202,7 @@ namespace BeatSaber99Client.Items
                 case ItemTypes.SendBombs:
                 case ItemTypes.GhostArrows:
                 case ItemTypes.GhostNotes:
+                case ItemTypes.Drain:
                     return Shield.HasValue;
             }
 
@@ -220,7 +234,7 @@ namespace BeatSaber99Client.Items
                     break;
                 case ItemTypes.Poison:
                     Poison = Time.time;
-                    PluginUI.instance.SetEnergyBarColor(Color.green);
+                    PluginUI.instance.SetEnergyBarColor(Color.yellow);
                     break;
                 case ItemTypes.Shield:
                     Shield = Time.time;
@@ -240,6 +254,10 @@ namespace BeatSaber99Client.Items
                     break;
                 case ItemTypes.GhostArrows:
                     StartGhostArrowsNextFrame = true;
+                    break;
+                case ItemTypes.Drain:
+                    Drain = Time.time;
+                    PluginUI.instance.SetEnergyBarColor(Color.green);
                     break;
             }
 

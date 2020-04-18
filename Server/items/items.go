@@ -21,6 +21,7 @@ const (
 	SendBombsItem       ItemType = "Send Bombs (5s)"
 	GhostNotesItem      ItemType = "Ghost Notes (5s)"
 	GhostArrowsItem     ItemType = "Ghost Arrows (5s)"
+	DrainItem           ItemType = "Drain (5s)" // Drain health over time
 )
 
 var (
@@ -41,6 +42,7 @@ var AllItems = []ItemType{
 	SendBombsItem,
 	GhostNotesItem,
 	GhostArrowsItem,
+	DrainItem,
 }
 
 func IsItemOffensive(item ItemType) bool {
@@ -54,6 +56,8 @@ func IsItemOffensive(item ItemType) bool {
 	case SendBombsItem:
 		fallthrough
 	case GhostNotesItem:
+		fallthrough
+	case DrainItem:
 		fallthrough
 	case GhostArrowsItem:
 		return true
