@@ -27,6 +27,7 @@ const (
 var (
 	ItemDropChance = 0.05
 	ItemMinCombo   = 70
+	OnFireMinCombo = 200
 )
 
 var AllItems = []ItemType{
@@ -66,21 +67,23 @@ func IsItemOffensive(item ItemType) bool {
 }
 
 func UpdateChancesFromRedis(db *db.DB) {
-	chancekey := "ITEM_DROP_CHANCE"
-	mincombokey := "ITEM_MIN_COMBO"
+	ItemMinCombo = int(fetchFloat(db, "ITEM_MIN_COMBO", float64(ItemMinCombo)))
+	ItemDropChance = fetchFloat(db, "ITEM_DROP_CHANCE", ItemDropChance)
+	OnFireMinCombo = int(fetchFloat(db, "ONFIRE_MIN_COMBO", float64(OnFireMinCombo)))
+}
 
-	chanceraw, err := db.Get(chancekey)
-
-	if err != nil {
-		return
-	}
-
-	mincomboraw, err := db.Get(mincombokey)
+func fetchFloat(db *db.DB, key string, orelse float64) float64 {
+	valueraw, err := db.Get(key)
 
 	if err != nil {
-		return
+		return orelse
 	}
 
-	ItemMinCombo, _ = strconv.Atoi(mincomboraw)
-	ItemDropChance, _ = strconv.ParseFloat(chanceraw, 64)
+	value, err := strconv.ParseFloat(valueraw, 64)
+
+	if err != nil {
+		return orelse
+	}
+
+	return value
 }

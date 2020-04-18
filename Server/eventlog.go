@@ -67,8 +67,8 @@ func createFunnyMessageForStateUpdate(sender *Client, packet PlayerStateUpdatePa
 		})
 	}
 
-	if sender.lastState.CurrentCombo < 200 &&
-		packet.CurrentCombo > 200 {
+	if sender.lastState.CurrentCombo < items.OnFireMinCombo &&
+		packet.CurrentCombo > items.OnFireMinCombo {
 		chosen := rand.Intn(len(funnyOnFireMessage))
 
 		sender.session.Send(EventLogPacket{
