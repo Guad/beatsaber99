@@ -81,7 +81,6 @@ namespace BeatSaber99Client
 
                 callback?.Invoke(entitlementStatus, !getBeatmapLevelResult.isError, getBeatmapLevelResult.beatmapLevel);
 
-
                 Plugin.log.Info("Starting...");
                 StartLevel(getBeatmapLevelResult.beatmapLevel, characteristic, difficulty,
                     GameplayModifiers.defaultModifiers);

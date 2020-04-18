@@ -35,11 +35,13 @@ namespace BeatSaber99Client
 
             var t = new Thread(() =>
             {
-                string tmpPath = Path.Combine(Path.GetTempPath(), "tmpdownload");
+                string tmpPath = Path.Combine(Path.GetTempPath(), "tmp_beatsaber99_download.zip");
                 Plugin.log.Info("Starting song download into " + tmpPath);
 
                 if (File.Exists(tmpPath))
                     File.Delete(tmpPath);
+                else
+                    Plugin.CleanPaths.Add(tmpPath);
 
                 using (var wc = new WebClient())
                 {
@@ -59,9 +61,11 @@ namespace BeatSaber99Client
 
                 string songDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
+                // TODO: Handle exceptions
                 System.IO.Compression.ZipFile.ExtractToDirectory(tmpPath, songDirectory);
 
                 Plugin.log.Info("Downloaded & extracted to " + songDirectory);
+                Plugin.CleanPaths.Add(songDirectory);
 
                 Executor.Enqueue(() =>
                 {

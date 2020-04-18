@@ -13,7 +13,17 @@ namespace BeatSaber99Client.Items
 
         public static float? Brink = null;
         public static float? Invulnerable = null;
+        public static float? Shield = null;
+        public static float? Poison = null;
+        private static float? _oldEnergy;
+
         public static float AddHealthNextFrame;
+        public static bool StartGhostNotesNextFrame;
+        public static bool StartGhostArrowsNextFrame;
+
+
+        private const float ItemDuration = 5f;
+        private const float BombChance = 0.2f;
 
         public float _triggerLastPush = 0;
         private GameEnergyCounter _gameEnergyCounter;
@@ -36,6 +46,12 @@ namespace BeatSaber99Client.Items
             Invulnerable = null;
             AddHealthNextFrame = 0;
             _gameEnergyCounter = null;
+            Shield = null;
+            Poison = null;
+            _oldEnergy = null;
+            StartGhostArrowsNextFrame = false;
+            StartGhostNotesNextFrame = false;
+            PluginUI.instance.SetEnergyBarColor(Color.white);
         }
 
         private void ClientOnClientStatusChanged(object sender, ClientStatus e)
@@ -59,27 +75,69 @@ namespace BeatSaber99Client.Items
 
             if (Invulnerable.HasValue)
             {
-                if (Time.time - Invulnerable.Value > 10f)
+                if (Time.time - Invulnerable.Value > ItemDuration)
                 {
                     Invulnerable = null;
+                    PluginUI.instance.SetEnergyBarColor(Color.white);
                 }
                 else
                     _gameEnergyCounter.AddEnergy(1.0f - _gameEnergyCounter.energy);
             }
             else if(Brink.HasValue)
             {
-                if (Time.time - Brink.Value > 10f)
+                if (Time.time - Brink.Value > ItemDuration)
                 {
                     Brink = null;
+                    PluginUI.instance.SetEnergyBarColor(Color.white);
                 }
                 else if (_gameEnergyCounter.energy > 0f)
                     _gameEnergyCounter.AddEnergy(0.05f - _gameEnergyCounter.energy);
+            }
+            else if (Poison.HasValue)
+            {
+                if (Time.time - Poison.Value > ItemDuration)
+                {
+                    Poison = null;
+                    _oldEnergy = null;
+                    PluginUI.instance.SetEnergyBarColor(Color.white);
+                }
+                else if (_oldEnergy == null)
+                {
+                    _oldEnergy = _gameEnergyCounter.energy;
+                }
+                else if (_gameEnergyCounter.energy > _oldEnergy.Value)
+                {
+                    _gameEnergyCounter.AddEnergy(_oldEnergy.Value - _gameEnergyCounter.energy);
+                }
+                else
+                {
+                    _oldEnergy = _gameEnergyCounter.energy;
+                }
             }
             else if (AddHealthNextFrame > 0 && _gameEnergyCounter.energy > 0f)
             {
                 _gameEnergyCounter.AddEnergy(AddHealthNextFrame);
                 AddHealthNextFrame = 0;
             }
+
+            if (Shield.HasValue && Time.time - Shield.Value > ItemDuration)
+            {
+                Shield = null;
+                PluginUI.instance.SetEnergyBarColor(Color.white);
+            }
+
+            if (StartGhostNotesNextFrame)
+            {
+                StartCoroutine(BeatmapSpawnManager.instance.ReplaceNextXNotesWithGhostNotesCoroutine(ItemDuration));
+                StartGhostNotesNextFrame = false;
+            }
+
+            if (StartGhostArrowsNextFrame)
+            {
+                StartCoroutine(BeatmapSpawnManager.instance.ReplaceNextXNotesWithDisappearingArrowsCoroutine(ItemDuration));
+                StartGhostArrowsNextFrame = false;
+            }
+
 
             float trigger = Mathf.Max(Input.GetAxis("TriggerRightHand"), Input.GetAxis("TriggerLeftHand"));
 
@@ -102,7 +160,12 @@ namespace BeatSaber99Client.Items
 
             switch (SessionState.CurrentItem)
             {
-                case "One Hit Fail":
+                case ItemTypes.Brink:
+                case ItemTypes.Poison:
+                case ItemTypes.SwapNotes:
+                case ItemTypes.SendBombs:
+                case ItemTypes.GhostArrows:
+                case ItemTypes.GhostNotes:
                     break;
                 default:
                     ActivateItem(SessionState.CurrentItem);
@@ -114,24 +177,67 @@ namespace BeatSaber99Client.Items
             PluginUI.instance.SetCurrentItem(null);
         }
 
-        public static void ActivateItem(string item)
+        private static bool IsProtectedFrom(string item)
         {
             switch (item)
             {
-                case "+Health":
+                case ItemTypes.Brink:
+                case ItemTypes.Poison:
+                case ItemTypes.SwapNotes:
+                case ItemTypes.SendBombs:
+                case ItemTypes.GhostArrows:
+                case ItemTypes.GhostNotes:
+                    return Shield.HasValue;
+            }
+
+            return false;
+        }
+
+        public static void ActivateItem(string item)
+        {
+            if (IsProtectedFrom(item)) return;
+
+            switch (item)
+            {
+                case ItemTypes.Health1:
                     AddHealthNextFrame = 0.1f;
                     break;
-                case "++Health":
+                case ItemTypes.Health2:
                     AddHealthNextFrame = 0.2f;
                     break;
-                case "+++Health":
+                case ItemTypes.Health3:
                     AddHealthNextFrame = 0.5f;
                     break;
-                case "Invulnerability":
+                case ItemTypes.Invulnerability:
                     Invulnerable = Time.time;
+                    PluginUI.instance.SetEnergyBarColor(Color.magenta);
                     break;
-                case "One Hit Fail":
+                case ItemTypes.Brink:
                     Brink = Time.time;
+                    PluginUI.instance.SetEnergyBarColor(Color.red);
+                    break;
+                case ItemTypes.Poison:
+                    Poison = Time.time;
+                    PluginUI.instance.SetEnergyBarColor(Color.green);
+                    break;
+                case ItemTypes.Shield:
+                    Shield = Time.time;
+                    PluginUI.instance.SetEnergyBarColor(Color.blue);
+                    break;
+                case ItemTypes.NoArrows:
+                    BeatmapSpawnManager.instance.ReplaceNextXNotesWithAnyDirection(ItemDuration);
+                    break;
+                case ItemTypes.SwapNotes:
+                    BeatmapSpawnManager.instance.ReplaceNextXNotesWithEachother(ItemDuration);
+                    break;
+                case ItemTypes.SendBombs:
+                    BeatmapSpawnManager.instance.ReplaceNextXNotesWithRandomBombs(ItemDuration, BombChance);
+                    break;
+                case ItemTypes.GhostNotes:
+                    StartGhostNotesNextFrame = true;
+                    break;
+                case ItemTypes.GhostArrows:
+                    StartGhostArrowsNextFrame = true;
                     break;
             }
 

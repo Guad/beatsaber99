@@ -1,4 +1,6 @@
-﻿using BeatSaber99Client.Items;
+﻿using System.Collections.Generic;
+using System.IO;
+using BeatSaber99Client.Items;
 using BeatSaber99Client.UI;
 using BS_Utils.Gameplay;
 using BS_Utils.Utilities;
@@ -15,6 +17,7 @@ namespace BeatSaber99Client
     public class Plugin
     {
         public static Logger log { get; private set; }
+        public static List<string> CleanPaths = new List<string>();
         
 
         [Init]
@@ -52,6 +55,7 @@ namespace BeatSaber99Client
         private void BSEventsOngameSceneActive()
         {
             PluginUI.instance.SetupIngameUI();
+            BeatmapSpawnManager.Init();
         }
 
 
@@ -69,6 +73,18 @@ namespace BeatSaber99Client
         public void OnExit()
         {
             Client.Disconnect();
+
+            foreach (var path in CleanPaths)
+            {
+                if (Directory.Exists(path))
+                {
+                    Directory.Delete(path, true);
+                }
+                else if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
         }
     }
 }

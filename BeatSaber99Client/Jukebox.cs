@@ -12,8 +12,8 @@ namespace BeatSaber99Client
         public static ConcurrentQueue<EnqueueSongPacket> SongQueue = new ConcurrentQueue<EnqueueSongPacket>();
         public static Jukebox instance;
 
-        private float songStart;
-        private float songDuration;
+        public float songStart;
+        public float songDuration;
 
         private PreloadedLevel nextLevel;
         private bool songPreloaded;

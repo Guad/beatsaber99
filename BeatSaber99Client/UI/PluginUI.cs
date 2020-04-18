@@ -314,5 +314,15 @@ namespace BeatSaber99Client.UI
                 Client.ConnectAndMatchmake();
             }
         }
+
+        public void SetEnergyBarColor(Color color)
+        {
+            var _energyPanel = Resources.FindObjectsOfTypeAll<GameEnergyUIPanel>().FirstOrDefault();
+            if (_energyPanel == null) return;
+            Image energyBar = _energyPanel.GetField<Image>("_energyBar");
+            if (energyBar == null) return;
+            energyBar.color = color;
+
+        }
     }
 }

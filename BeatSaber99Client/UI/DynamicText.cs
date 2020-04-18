@@ -46,7 +46,8 @@ namespace BeatSaber99Client.UI
 
         public void SetPosition(Vector3 pos)
         {
-            _canvas.transform.position = pos;
+            if (_canvas != null && _canvas.transform != null)
+                _canvas.transform.position = pos;
         }
 
         void Awake()

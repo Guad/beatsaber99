@@ -228,7 +228,9 @@
     <Compile Include="Executor.cs" />
     <Compile Include="Gameplay.cs" />
     <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="Items\BeatmapSpawnManager.cs" />
     <Compile Include="Items\ItemManager.cs" />
+    <Compile Include="Items\ItemTypes.cs" />
     <Compile Include="Jukebox.cs" />
     <Compile Include="LevelLoader.cs" />
     <Compile Include="Packets\ActivateItemPacket.cs" />

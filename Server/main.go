@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -58,6 +60,8 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	go matchmake()
 
 	http.HandleFunc("/ws", serveWs)
