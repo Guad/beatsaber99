@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/guad/bsaber99/items"
+	log "github.com/sirupsen/logrus"
 )
 
 type ItemManager struct {
@@ -35,6 +36,14 @@ func (im *ItemManager) Tick() {
 				Type:     "GiveItemPacket",
 				ItemType: string(*im.currentItem),
 			})
+
+			log.WithFields(log.Fields{
+				"name":  im.client.name,
+				"id":    im.client.id,
+				"score": im.client.Score(),
+				"combo": im.client.lastState.CurrentCombo,
+				"item":  string(*im.currentItem),
+			}).Info("Gave item to user")
 		}
 	}
 }
@@ -65,7 +74,21 @@ func (im *ItemManager) ActivateItem() {
 				Type: "EventLogPacket",
 				Text: fmt.Sprintf("You attacked %v with %v!", target.name, string(*im.currentItem)),
 			})
+
+			log.WithFields(log.Fields{
+				"name":      im.client.name,
+				"id":        im.client.id,
+				"target":    target.name,
+				"target_id": target.id,
+				"item":      string(*im.currentItem),
+			}).Info("User attacked someone else")
 		}
+	} else {
+		log.WithFields(log.Fields{
+			"name": im.client.name,
+			"id":   im.client.id,
+			"item": string(*im.currentItem),
+		}).Info("User used their item")
 	}
 
 	im.currentItem = nil

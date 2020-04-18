@@ -2,7 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Packet interface {
@@ -44,7 +45,11 @@ func (p ConnectionPacket) Dispatch(sender *Client) {
 	sender.id = p.ID
 	sender.state = MatchmakingClientState
 
-	log.Printf("%v has connected.\n", sender.String())
+	log.WithFields(log.Fields{
+		"name": sender.name,
+		"id":   sender.id,
+		"ip":   sender.conn.RemoteAddr().String(),
+	}).Info("User has connected")
 
 	mainMatchmaker.queue <- sender
 }

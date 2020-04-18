@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -44,14 +44,28 @@ func clientLoop(ws *websocket.Conn) {
 		packet.Dispatch(client)
 	}
 
-	log.Printf("%v has disconnected.\n", client.String())
+	position := -1
+
+	if client.session != nil {
+		position = len(client.session.players) + 1
+	}
+
+	log.WithFields(log.Fields{
+		"name":        client.name,
+		"id":          client.id,
+		"ip":          client.conn.RemoteAddr().String(),
+		"sessionTime": time.Now().Sub(client.joinTime).Seconds(),
+		"state":       string(client.state),
+		"score":       client.Score(),
+		"position":    position,
+	}).Info("User has disconnected")
 	client.Left()
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("upgrade:", err)
+		log.Println("upgrade error:", err)
 		return
 	}
 

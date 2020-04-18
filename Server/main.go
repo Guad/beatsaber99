@@ -1,14 +1,17 @@
 package main
 
 import (
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
+
+	log.SetFormatter(&log.JSONFormatter{})
 
 	go matchmake()
 	go StartIdlekicker()

@@ -1,8 +1,10 @@
 package main
 
 import (
-	"log"
 	"sync"
+	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type SessionState int
@@ -16,6 +18,7 @@ const (
 type Session struct {
 	sync.RWMutex
 
+	id      string
 	players []*Client
 	state   SessionState
 }
@@ -42,6 +45,8 @@ func (s *Session) Send(data interface{}) {
 }
 
 func (s *Session) RemovePlayer(player *Client) {
+	// Be VERY careful with mutex unlocks.
+
 	s.Lock()
 
 	idx := -1
@@ -53,7 +58,11 @@ func (s *Session) RemovePlayer(player *Client) {
 	}
 
 	if idx == -1 {
-		log.Println("Could not find player index!")
+		log.WithFields(log.Fields{
+			"name": player.name,
+			"id":   player.id,
+			"ip":   player.conn.RemoteAddr().String(),
+		}).Warn("Could not find player index!")
 		s.Unlock()
 		return
 	}
@@ -62,16 +71,35 @@ func (s *Session) RemovePlayer(player *Client) {
 	s.players[len(s.players)-1] = nil
 	s.players = s.players[:len(s.players)-1]
 
+	var lastPlayer *Client
+
+	if len(s.players) == 1 {
+		lastPlayer = s.players[0]
+	}
+
+	count := len(s.players)
+
 	s.Unlock()
 
 	if s.state == Playing {
-		if len(s.players) == 0 {
+		if count == 0 {
 			s.Destroy()
-		} else if len(s.players) == 1 {
-			log.Println("Session winner:", s.players[0].String())
-			s.players[0].Send(WinnerPacket{
+		} else if count == 1 {
+			winner := lastPlayer
+
+			winner.Send(WinnerPacket{
 				Type: "WinnerPacket",
 			})
+
+			log.WithFields(log.Fields{
+				"name":        winner.name,
+				"id":          winner.id,
+				"ip":          winner.conn.RemoteAddr().String(),
+				"sessionTime": time.Now().Sub(winner.joinTime).Seconds(),
+				"score":       winner.Score(),
+				"position":    1,
+			}).Info("User has won the match")
+
 		} else {
 			s.Send(PlayersLeftPacket{
 				Type:         "PlayersLeftPacket",

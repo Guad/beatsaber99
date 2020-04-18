@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-func PickRandomSong() string {
+func PickRandomOfficialSong() string {
 	choice := rand.Intn(len(AllSongsIDs))
 	song := AllSongsIDs[choice]
 

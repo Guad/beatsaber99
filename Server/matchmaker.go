@@ -1,11 +1,13 @@
 package main
 
 import (
-	"log"
 	"os"
 	"strconv"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/guad/bsaber99/songs"
+	log "github.com/sirupsen/logrus"
 )
 
 type Matchmaker struct {
@@ -17,13 +19,14 @@ var mainMatchmaker *Matchmaker
 var MinPlayersForSession = 2
 
 func startSession(session *Session) {
-	log.Println("Starting session...")
+	starterSong := songs.PickRandomOfficialSong()
+	starterDifficulty := "Expert"
 
 	session.Send(StartPacket{
 		TotalPlayers: len(session.players),
 		Type:         "StartPacket",
-		Difficulty:   "Expert",
-		LevelID:      songs.PickRandomSong(),
+		Difficulty:   starterDifficulty,
+		LevelID:      starterSong,
 	})
 
 	// 5 songs queue
@@ -40,6 +43,13 @@ func startSession(session *Session) {
 	}
 
 	session.StartSession()
+
+	log.WithFields(log.Fields{
+		"session_id":          session.id,
+		"players":             len(session.players),
+		"starting_song":       starterSong,
+		"starting_difficulty": starterDifficulty,
+	}).Info("Session started")
 }
 
 func matchmake() {
@@ -52,9 +62,12 @@ func matchmake() {
 	}
 
 	for {
+		matchmakingStart := time.Now()
+
 		currentSession := &Session{
 			players: make([]*Client, 0, MinPlayersForSession),
 			state:   Matchmaking,
+			id:      uuid.New().String(),
 		}
 
 		for len(currentSession.players) < MinPlayersForSession {
@@ -68,7 +81,19 @@ func matchmake() {
 			currentSession.players = append(currentSession.players, player)
 			player.session = currentSession
 			currentSession.Unlock()
+
+			if len(currentSession.players) == 1 {
+				matchmakingStart = time.Now()
+			}
 		}
+
+		matchmakingEnd := time.Now().Sub(matchmakingStart)
+
+		log.WithFields(log.Fields{
+			"session_id": currentSession.id,
+			"duration":   matchmakingEnd.Seconds(),
+			"players":    len(currentSession.players),
+		}).Info("Matchmaking successful")
 
 		startSession(currentSession)
 	}
