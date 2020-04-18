@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using BeatSaber99Client.Assets;
 using BeatSaber99Client.Items;
 using BeatSaber99Client.UI;
 using BS_Utils.Gameplay;
 using BS_Utils.Utilities;
 using IPA;
+using IPA.Config.Stores;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = IPA.Logging.Logger;
@@ -22,15 +24,17 @@ namespace BeatSaber99Client
         
 
         [Init]
-        public Plugin(Logger logger)
+        public Plugin(Logger logger, Config config)
         {
             log = logger;
+            PluginConfig.Instance = config.Generated<PluginConfig>();
         }
 
         [OnStart]
         public void OnStart()
         {
             BSEvents.OnLoad();
+            Sprites.Init();
             Gamemode.Init();
             GetUserInfo.UpdateUserInfo();
             HarmonyPatcher.Patch();

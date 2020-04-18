@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BeatSaber99Client.Assets;
 using BeatSaber99Client.Packets;
 using CustomUI.BeatSaber;
 using CustomUI.Utilities;
@@ -296,7 +297,7 @@ namespace BeatSaber99Client.UI
             _multiplayerButton.transform.SetAsLastSibling();
 
             BeatSaberUI.SetButtonText(_multiplayerButton, ButtonText);
-            //_multiplayerButton.SetButtonIcon(Sprites.onlineIcon);
+            _multiplayerButton.SetButtonIcon(Sprites.logoIcon);
 
             _multiplayerButton.interactable = false;
 

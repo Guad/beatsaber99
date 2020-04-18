@@ -222,6 +222,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Sprites.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientStatus.cs" />
     <Compile Include="CustomSongInjector.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="Packets\IPacket.cs" />
     <Compile Include="Packets\PlayersLeftPacket.cs" />
     <Compile Include="Packets\UseItemPacket.cs" />
+    <Compile Include="PluginConfig.cs" />
     <Compile Include="SessionState.cs" />
     <Compile Include="Packets\StartPacket.cs" />
     <Compile Include="Packets\WinnerPacket.cs" />
@@ -256,7 +258,9 @@
     <EmbeddedResource Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Logo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "A:\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Plugins\$(TargetName).dll"</PostBuildEvent>
