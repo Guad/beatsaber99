@@ -20,8 +20,8 @@ type Session struct {
 }
 
 func (s *Session) Send(data interface{}) {
-	// s.RLock()
-	// defer s.RUnlock()
+	s.RLock()
+	defer s.RUnlock()
 
 	for _, player := range s.players {
 		player.Send(data)
@@ -29,8 +29,7 @@ func (s *Session) Send(data interface{}) {
 }
 
 func (s *Session) RemovePlayer(player *Client) {
-	// s.Lock()
-	//defer s.Unlock()
+	s.Lock()
 
 	idx := -1
 	for i := range s.players {
@@ -42,12 +41,15 @@ func (s *Session) RemovePlayer(player *Client) {
 
 	if idx == -1 {
 		log.Println("Could not find player index!")
+		s.Unlock()
 		return
 	}
 
 	s.players[idx] = s.players[len(s.players)-1]
 	s.players[len(s.players)-1] = nil
 	s.players = s.players[:len(s.players)-1]
+
+	s.Unlock()
 
 	if s.state == Playing {
 		if len(s.players) == 0 {

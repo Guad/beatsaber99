@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/guad/bsaber99/items"
 )
 
 var funnyDeathMessages = []string{
@@ -56,7 +58,7 @@ func createFunnyMessageForStateUpdate(sender *Client, packet PlayerStateUpdatePa
 	// Player broke their combo, but it's not a song change
 	if sender.lastState.CurrentCombo > packet.CurrentCombo &&
 		sender.lastState.Score < packet.Score &&
-		sender.lastState.CurrentCombo > 100 {
+		sender.lastState.CurrentCombo > items.ItemMinCombo {
 		chosen := rand.Intn(len(funnyComboBreakMessages))
 
 		sender.session.Send(EventLogPacket{

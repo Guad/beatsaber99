@@ -14,12 +14,9 @@ type Matchmaker struct {
 
 var mainMatchmaker *Matchmaker
 
-var MinPlayersForSession = 1
+var MinPlayersForSession = 2
 
 func startSession(session *Session) {
-	// session.RLock()
-	// defer session.RUnlock()
-
 	log.Println("Starting session...")
 
 	session.Send(StartPacket{
@@ -30,13 +27,15 @@ func startSession(session *Session) {
 	})
 
 	// 5 songs queue
+	choices := songs.PickNCustomSongs(5)
+
 	for i := 0; i < 5; i++ {
 		session.Send(EnqueueSongPacket{
 			Type:           "EnqueueSongPacket",
 			Characteristic: "Standard",
 			Difficulty:     "Expert",
 			Speed:          1.0 + 0.1*float64(i),
-			LevelID:        songs.PickRandomCustomSong(),
+			LevelID:        choices[i],
 		})
 	}
 
@@ -49,7 +48,7 @@ func matchmake() {
 	}
 
 	mainMatchmaker = &Matchmaker{
-		queue: make(chan *Client),
+		queue: make(chan *Client, MinPlayersForSession),
 	}
 
 	for {

@@ -85,6 +85,10 @@ type PlayerStateUpdatePacket struct {
 }
 
 func (p PlayerStateUpdatePacket) Dispatch(player *Client) {
+	if player.session == nil || player.session.state != Playing {
+		return
+	}
+
 	createFunnyMessageForStateUpdate(player, p)
 	player.lastState = p
 }
@@ -100,5 +104,9 @@ type ActivateItemPacket struct {
 }
 
 func (p ActivateItemPacket) Dispatch(sender *Client) {
+	if sender.session == nil || sender.session.state != Playing {
+		return
+	}
+
 	sender.items.ActivateItem()
 }

@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
 
 type Client struct {
+	sync.Mutex
+
 	conn      *websocket.Conn
 	session   *Session
 	name      string
@@ -16,6 +19,9 @@ type Client struct {
 }
 
 func (c *Client) Send(packet interface{}) {
+	c.Lock()
+	defer c.Unlock()
+
 	c.conn.WriteJSON(packet)
 }
 

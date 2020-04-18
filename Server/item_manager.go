@@ -78,6 +78,9 @@ func (im *ItemManager) chooseRandomOpponent() *Client {
 		return nil
 	}
 
+	im.client.session.RLock()
+	defer im.client.session.RUnlock()
+
 	for target == nil {
 		indx := rand.Intn(len(im.client.session.players))
 

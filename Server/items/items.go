@@ -16,9 +16,9 @@ const (
 	GhostNotesItem      ItemType = "Ghost Notes (5s)"
 	GhostArrowsItem     ItemType = "Ghost Arrows (5s)"
 
-	ItemDropChance = 0.01
+	ItemDropChance = 0.05
 	// ItemDropChance = 1
-	ItemMinCombo = 80
+	ItemMinCombo = 70
 	// ItemMinCombo = 5
 )
 
