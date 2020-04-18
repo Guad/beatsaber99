@@ -36,22 +36,39 @@ func (bp BasePacket) Dispatch(sender *Client) {
 }
 
 type ConnectionPacket struct {
-	Name string `json:"name,omitempty"`
-	ID   string `json:"id,omitempty"`
+	Name     string `json:"name,omitempty"`
+	ID       string `json:"id,omitempty"`
+	Platform string `json:"platform,omitempty"`
+	Version  int    `json:"version,omitempty"`
 }
 
 func (p ConnectionPacket) Dispatch(sender *Client) {
 	sender.name = p.Name
 	sender.id = p.ID
 	sender.state = MatchmakingClientState
+	sender.platform = p.Platform
 
-	log.WithFields(log.Fields{
-		"name": sender.name,
-		"id":   sender.id,
-		"ip":   sender.conn.RemoteAddr().String(),
-	}).Info("User has connected")
+	if p.Version < Version {
+		log.WithFields(log.Fields{
+			"name":        sender.name,
+			"id":          sender.id,
+			"ip":          sender.ip,
+			"platform":    sender.platform,
+			"version":     p.Version,
+			"our_version": Version,
+		}).Info("User with lower version kicked")
 
-	mainMatchmaker.queue <- sender
+		sender.Kick()
+	} else {
+		log.WithFields(log.Fields{
+			"name":     sender.name,
+			"id":       sender.id,
+			"ip":       sender.ip,
+			"platform": sender.platform,
+		}).Info("User has connected")
+
+		mainMatchmaker.queue <- sender
+	}
 }
 
 type StartPacket struct {

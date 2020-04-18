@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/guad/bsaber99/items"
 	"github.com/guad/bsaber99/songs"
 	log "github.com/sirupsen/logrus"
 )
@@ -16,7 +17,7 @@ type Matchmaker struct {
 
 var mainMatchmaker *Matchmaker
 
-var MinPlayersForSession = 2
+var MinPlayersForSession = 1
 
 func startSession(session *Session) {
 	starterSong := songs.PickRandomOfficialSong()
@@ -50,6 +51,8 @@ func startSession(session *Session) {
 		"starting_song":       starterSong,
 		"starting_difficulty": starterDifficulty,
 	}).Info("Session started")
+
+	go items.UpdateChancesFromRedis(database)
 }
 
 func updateMinPlayersForSession() {
@@ -67,8 +70,9 @@ func matchmake() {
 		queue: make(chan *Client, MinPlayersForSession),
 	}
 
+	serverStartup.Done()
+
 	for {
-		updateMinPlayersForSession()
 		matchmakingStart := time.Now()
 
 		currentSession := &Session{
@@ -92,6 +96,8 @@ func matchmake() {
 			if len(currentSession.players) == 1 {
 				matchmakingStart = time.Now()
 			}
+
+			updateMinPlayersForSession()
 		}
 
 		matchmakingEnd := time.Now().Sub(matchmakingStart)

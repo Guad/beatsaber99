@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using BeatSaberUI = BeatSaberMarkupLanguage.BeatSaberUI;
+using BSEvents = BS_Utils.Utilities.BSEvents;
 
 namespace BeatSaber99Client.UI
 {
@@ -230,16 +231,19 @@ namespace BeatSaber99Client.UI
             if (winnerText != null)
                 winnerText.text.text = active ? "Victory Royale!" : "";
         }
-
+        
         private void ClientOnClientStatusChanged(object sender, ClientStatus e)
         {
             switch (e)
             {
                 case ClientStatus.Waiting:
-                    hudText.gameObject.SetActive(false);
+                    if (Client.Status == ClientStatus.Playing)
+                        hudText.text = $"Placed: {SessionState.PlayersLeft}";
+                    else
+                        hudText.text = $"";
+
                     playersLeftText?.gameObject.SetActive(false);
                     SetCurrentItem(null);
-                    SetWinnerText(false);
 
                     BeatSaberUI.SetButtonText(_multiplayerButton, ButtonText);
                     _multiplayerButton.interactable = true;

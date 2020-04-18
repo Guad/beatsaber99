@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using BeatSaber99Client.Packets;
+using BeatSaber99Client.UI;
 using UnityEngine;
 
 namespace BeatSaber99Client
@@ -17,11 +18,22 @@ namespace BeatSaber99Client
 
         private PreloadedLevel nextLevel;
         private bool songPreloaded;
+        private bool nextSongTextShown;
 
         public static void Init()
         {
             new GameObject("beatsaber99_jukebox").AddComponent<Jukebox>();
             Plugin.log.Info("Jukebox init");
+
+            Client.ClientStatusChanged += ClientOnClientStatusChanged;
+        }
+
+        private static void ClientOnClientStatusChanged(object sender, ClientStatus e)
+        {
+            if (e == ClientStatus.Waiting)
+            {
+                SongQueue = new ConcurrentQueue<EnqueueSongPacket>();
+            }
         }
 
         void Update()
@@ -37,6 +49,15 @@ namespace BeatSaber99Client
                 {
                     Plugin.log.Info("Starting preloading song.");
                     PreloadSong();
+                }
+
+                if (!nextSongTextShown &&
+                    now > songStart + songDuration - 10f &&
+                    nextLevel != null)
+                {
+                    nextSongTextShown = true;
+
+                    PluginUI.instance.PushEventLog($"Coming up: {nextLevel.levelResult.beatmapLevel.songName} - {nextLevel.levelResult.beatmapLevel.songAuthorName}");
                 }
 
                 if (now > songStart + songDuration)
@@ -97,6 +118,12 @@ namespace BeatSaber99Client
                                     Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
                                 }
                             );
+                        },
+                        () =>
+                        {
+                            // Download fail, wat do?
+                            Plugin.log.Error("Download failed. Leaving session...");
+                            Client.Disconnect();
                         });
                 }
                 else
@@ -140,6 +167,7 @@ namespace BeatSaber99Client
                     LevelLoader.SwitchLevel(nextLevel);
                     songPreloaded = false;
                     nextLevel = null;
+                    nextSongTextShown = false;
                     Plugin.log.Info("Level switched.");
                 }
             }

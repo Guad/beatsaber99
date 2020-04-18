@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using BeatSaber99Client.Items;
 using BeatSaber99Client.UI;
 using BS_Utils.Gameplay;
@@ -44,6 +45,17 @@ namespace BeatSaber99Client
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 
             log.Info("Beat Saber 99 started");
+
+            Client.ClientStatusChanged += ClientOnClientStatusChanged;
+        }
+
+        private void ClientOnClientStatusChanged(object sender, ClientStatus e)
+        {
+            if (e == ClientStatus.Waiting && Client.Status == ClientStatus.Playing)
+            {
+                // Disabled because of an exception on level change (???)
+                // CleanupFiles();
+            }
         }
 
         private void BSEventsOnmenuSceneLoadedFresh()
@@ -69,10 +81,14 @@ namespace BeatSaber99Client
             }
         }
 
-        [OnExit]
-        public void OnExit()
+        public static void CleanupFiles()
         {
-            Client.Disconnect();
+            var t = new Thread(DoTheCleanup);
+            t.Start();
+        }
+
+        private static void DoTheCleanup()
+        {
 
             foreach (var path in CleanPaths)
             {
@@ -85,6 +101,16 @@ namespace BeatSaber99Client
                     File.Delete(path);
                 }
             }
+
+            CleanPaths.Clear();
+        }
+
+        [OnExit]
+        public void OnExit()
+        {
+            Client.Disconnect();
+
+            DoTheCleanup();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace BeatSaber99Client
             cachedMediaAsyncLoaderSO = _customLevelLoader.GetField<CachedMediaAsyncLoader>("_cachedMediaAsyncLoaderSO");
         }
 
-        public static void StartSongDownload(string url, Action<CustomPreviewBeatmapLevel> onComplete)
+        public static void StartSongDownload(string url, Action<CustomPreviewBeatmapLevel> onComplete, Action onfail)
         {
             Plugin.log.Info("Queuing song download...");
 
@@ -53,6 +53,7 @@ namespace BeatSaber99Client
                     catch (Exception e)
                     {
                         Plugin.log.Error(e);
+                        onfail?.Invoke();
                         return;
                     }
                 }
@@ -62,7 +63,16 @@ namespace BeatSaber99Client
                 string songDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
                 // TODO: Handle exceptions
-                System.IO.Compression.ZipFile.ExtractToDirectory(tmpPath, songDirectory);
+                try
+                {
+                    System.IO.Compression.ZipFile.ExtractToDirectory(tmpPath, songDirectory);
+                }
+                catch (Exception e)
+                {
+                    Plugin.log.Error(e);
+                    onfail?.Invoke();
+                    return;
+                }
 
                 Plugin.log.Info("Downloaded & extracted to " + songDirectory);
                 Plugin.CleanPaths.Add(songDirectory);

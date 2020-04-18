@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using BeatSaber99Client.Packets;
+using BeatSaber99Client.UI;
 using BS_Utils.Utilities;
 using HarmonyLib;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace BeatSaber99Client
             BSEvents.levelFailed += BSEvents_levelFailed;
             BSEvents.levelCleared += BSEvents_levelCleared;
             BSEvents.levelQuit += BSEventsOnlevelQuit;
+            BSEvents.levelRestarted += BSEventsOnlevelRestarted;
 
             BSEvents.comboDidChange += BSEventsOncomboDidChange;
 
@@ -82,12 +84,23 @@ namespace BeatSaber99Client
 
         private void BSEventsOnlevelQuit(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
         {
+            PluginUI.instance.SetWinnerText(false);
             if (Client.Status != ClientStatus.Playing) return;
             Client.Disconnect();
         }
 
+
+        private void BSEventsOnlevelRestarted(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
+        {
+            PluginUI.instance.SetWinnerText(false);
+            if (Client.Status != ClientStatus.Playing) return;
+            Client.Disconnect();
+        }
+
+
         private void BSEvents_levelCleared(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
         {
+            PluginUI.instance.SetWinnerText(false);
             if (Client.Status != ClientStatus.Playing) return;
             Plugin.log.Info("Level cleared");
             Client.Disconnect();
@@ -101,6 +114,7 @@ namespace BeatSaber99Client
 
         private void BSEvents_levelFailed(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)
         {
+            PluginUI.instance.SetWinnerText(false);
             if (Client.Status != ClientStatus.Playing) return;
             Client.Disconnect();
         }

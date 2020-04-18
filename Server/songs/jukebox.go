@@ -85,7 +85,7 @@ func (cache *jukeboxCache) getDifficultyForLevel(level int) string {
 
 func fetchSongList(db *db.DB) []string {
 	key := "SONGS_IN_ROTATION"
-	songs, err := db.GetList(key)
+	songs, err := db.GetSet(key)
 
 	if err != nil {
 		// Fallback to our list

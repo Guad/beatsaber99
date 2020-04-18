@@ -250,6 +250,7 @@
     <Compile Include="UI\DynamicText.cs" />
     <Compile Include="Packets\PlayerStateUpdatePacket.cs" />
     <Compile Include="UI\PluginUI.cs" />
+    <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />

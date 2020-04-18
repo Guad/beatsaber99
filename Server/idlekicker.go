@@ -9,25 +9,28 @@ import (
 var idlewatch chan *Client
 
 func StartIdlekicker() {
-	idlewatch := make(chan *Client, 1000)
+	idlewatch = make(chan *Client, 1000)
 
+	serverStartup.Done()
 	for {
 		player := <-idlewatch
 
 		diff := time.Now().Sub(player.joinTime)
+
 		if diff < 10*time.Second {
-			time.Sleep(diff)
+			time.Sleep(10*time.Second - diff)
 		}
 
 		if player.state == LeftClientState {
 			continue
 		}
 
-		if player.state == WaitingClientState || player.session == nil {
+		if player.id == "" {
 			log.WithFields(log.Fields{
 				"name":        player.name,
 				"id":          player.id,
-				"ip":          player.conn.RemoteAddr().String(),
+				"ip":          player.ip,
+				"platform":    player.platform,
 				"sessionTime": time.Now().Sub(player.joinTime).Seconds(),
 				"state":       string(player.state),
 			}).Info("Kicked user for not sending initial packet")
@@ -51,7 +54,8 @@ func StartIdlekickerForSession(session *Session) {
 				log.WithFields(log.Fields{
 					"name":        p.name,
 					"id":          p.id,
-					"ip":          p.conn.RemoteAddr().String(),
+					"ip":          p.ip,
+					"platform":    p.platform,
 					"sessionTime": time.Now().Sub(p.joinTime).Seconds(),
 					"state":       string(p.state),
 					"score":       p.Score(),

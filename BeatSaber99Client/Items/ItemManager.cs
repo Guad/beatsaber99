@@ -22,8 +22,9 @@ namespace BeatSaber99Client.Items
         public static bool StartGhostArrowsNextFrame;
 
 
-        private const float ItemDuration = 5f;
-        private const float BombChance = 0.2f;
+        private const float ItemDuration = 5f; 
+        private const float BombChance = 0.5f;
+        private const float DrainPerSecond = 0.25f / ItemDuration;
 
         public float _triggerLastPush = 0;
         private GameEnergyCounter _gameEnergyCounter;
@@ -111,6 +112,7 @@ namespace BeatSaber99Client.Items
                 }
                 else
                 {
+                    _gameEnergyCounter.AddEnergy();
                     _oldEnergy = _gameEnergyCounter.energy;
                 }
             }

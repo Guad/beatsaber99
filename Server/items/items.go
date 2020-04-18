@@ -1,5 +1,11 @@
 package items
 
+import (
+	"strconv"
+
+	"github.com/guad/bsaber99/db"
+)
+
 type ItemType string
 
 const (
@@ -15,11 +21,11 @@ const (
 	SendBombsItem       ItemType = "Send Bombs (5s)"
 	GhostNotesItem      ItemType = "Ghost Notes (5s)"
 	GhostArrowsItem     ItemType = "Ghost Arrows (5s)"
+)
 
+var (
 	ItemDropChance = 0.05
-	// ItemDropChance = 1
-	ItemMinCombo = 70
-	// ItemMinCombo = 5
+	ItemMinCombo   = 70
 )
 
 var AllItems = []ItemType{
@@ -53,4 +59,24 @@ func IsItemOffensive(item ItemType) bool {
 		return true
 	}
 	return false
+}
+
+func UpdateChancesFromRedis(db *db.DB) {
+	chancekey := "ITEM_DROP_CHANCE"
+	mincombokey := "ITEM_MIN_COMBO"
+
+	chanceraw, err := db.Get(chancekey)
+
+	if err != nil {
+		return
+	}
+
+	mincomboraw, err := db.Get(mincombokey)
+
+	if err != nil {
+		return
+	}
+
+	ItemMinCombo, _ = strconv.Atoi(mincomboraw)
+	ItemDropChance, _ = strconv.ParseFloat(chanceraw, 64)
 }

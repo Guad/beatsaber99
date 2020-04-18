@@ -7,6 +7,7 @@ namespace BeatSaber99Client.Packets
         public void Dispatch()
         {
             Plugin.log.Info("Winner packet received.");
+            SessionState.PlayersLeft = 1;
             PluginUI.instance.SetWinnerText(true);
             Client.Disconnect();
         }

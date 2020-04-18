@@ -27,6 +27,8 @@ type Client struct {
 	lastState PlayerStateUpdatePacket
 	items     *ItemManager
 	state     ClientState
+	ip        string
+	platform  string
 
 	oldScore int
 

@@ -11,14 +11,13 @@ import (
 
 var upgrader = websocket.Upgrader{}
 
-func clientLoop(ws *websocket.Conn) {
-	defer ws.Close()
-
+func clientLoop(ws *websocket.Conn, realip string) {
 	client := &Client{
 		joinTime: time.Now(),
 		conn:     ws,
 		items:    &ItemManager{},
 		oldScore: -1,
+		ip:       realip,
 	}
 
 	client.items.client = client
@@ -50,26 +49,30 @@ func clientLoop(ws *websocket.Conn) {
 		position = len(client.session.players) + 1
 	}
 
+	client.Left()
+
 	log.WithFields(log.Fields{
 		"name":        client.name,
 		"id":          client.id,
-		"ip":          client.conn.RemoteAddr().String(),
+		"ip":          client.ip,
+		"platform":    client.platform,
 		"sessionTime": time.Now().Sub(client.joinTime).Seconds(),
 		"state":       string(client.state),
 		"score":       client.Score(),
 		"position":    position,
 	}).Info("User has disconnected")
-	client.Left()
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
+
+	realip := r.Header.Get("X-Forwarded-For")
+
 	if err != nil {
 		log.Println("upgrade error:", err)
 		return
 	}
 
 	defer ws.Close()
-
-	clientLoop(ws)
+	clientLoop(ws, realip)
 }

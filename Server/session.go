@@ -59,9 +59,10 @@ func (s *Session) RemovePlayer(player *Client) {
 
 	if idx == -1 {
 		log.WithFields(log.Fields{
-			"name": player.name,
-			"id":   player.id,
-			"ip":   player.conn.RemoteAddr().String(),
+			"name":     player.name,
+			"id":       player.id,
+			"ip":       player.ip,
+			"platform": player.platform,
 		}).Warn("Could not find player index!")
 		s.Unlock()
 		return
@@ -94,7 +95,8 @@ func (s *Session) RemovePlayer(player *Client) {
 			log.WithFields(log.Fields{
 				"name":        winner.name,
 				"id":          winner.id,
-				"ip":          winner.conn.RemoteAddr().String(),
+				"ip":          winner.ip,
+				"platform":    winner.platform,
 				"sessionTime": time.Now().Sub(winner.joinTime).Seconds(),
 				"score":       winner.Score(),
 				"position":    1,
