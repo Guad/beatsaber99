@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/guad/bsaber99/songs"
 )
 
 type Matchmaker struct {
@@ -24,7 +26,7 @@ func startSession(session *Session) {
 		TotalPlayers: len(session.players),
 		Type:         "StartPacket",
 		Difficulty:   "Expert",
-		LevelID:      pickRandomSong(),
+		LevelID:      songs.PickRandomSong(),
 	})
 
 	// 5 songs queue
@@ -34,8 +36,7 @@ func startSession(session *Session) {
 			Characteristic: "Standard",
 			Difficulty:     "Expert",
 			Speed:          1.0 + 0.1*float64(i),
-			// LevelID:        pickRandomSong(),
-			LevelID: pickRandomCustomSong(),
+			LevelID:        songs.PickRandomCustomSong(),
 		})
 	}
 

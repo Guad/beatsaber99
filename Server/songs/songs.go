@@ -1,4 +1,4 @@
-package main
+package songs
 
 var AllSongsIDs = []string{
 	"100Bills",

@@ -1,11 +1,11 @@
-package main
+package songs
 
 import (
 	"log"
 	"math/rand"
 )
 
-func pickRandomSong() string {
+func PickRandomSong() string {
 	choice := rand.Intn(len(AllSongsIDs))
 	song := AllSongsIDs[choice]
 
@@ -14,7 +14,7 @@ func pickRandomSong() string {
 	return song
 }
 
-func pickRandomCustomSong() string {
+func PickRandomCustomSong() string {
 	choice := rand.Intn(len(CustomSongsIDs))
 	song := CustomSongsIDs[choice]
 
