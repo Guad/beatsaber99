@@ -5,13 +5,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/guad/bsaber99/db"
 	log "github.com/sirupsen/logrus"
 )
+
+var database *db.DB
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	log.SetFormatter(&log.JSONFormatter{})
+
+	database = db.New()
 
 	go matchmake()
 	go StartIdlekicker()

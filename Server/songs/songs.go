@@ -1,6 +1,6 @@
 package songs
 
-var AllSongsIDs = []string{
+var OfficialSongsIDs = []string{
 	"100Bills",
 	"BalearicPumping",
 	"BeatSaber",

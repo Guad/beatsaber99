@@ -21,6 +21,7 @@ var MinPlayersForSession = 2
 func startSession(session *Session) {
 	starterSong := songs.PickRandomOfficialSong()
 	starterDifficulty := "Expert"
+	numSongsToSend := 15
 
 	session.Send(StartPacket{
 		TotalPlayers: len(session.players),
@@ -29,16 +30,15 @@ func startSession(session *Session) {
 		LevelID:      starterSong,
 	})
 
-	// 5 songs queue
-	choices := songs.PickNCustomSongs(5)
+	choices := songs.PickNCustomSongs(numSongsToSend, database)
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < len(choices); i++ {
 		session.Send(EnqueueSongPacket{
 			Type:           "EnqueueSongPacket",
-			Characteristic: "Standard",
-			Difficulty:     "Expert",
-			Speed:          1.0 + 0.1*float64(i),
-			LevelID:        choices[i],
+			Characteristic: choices[i].Characteristic,
+			Difficulty:     choices[i].Difficulty,
+			Speed:          choices[i].Speed,
+			LevelID:        choices[i].SongID,
 		})
 	}
 
@@ -52,16 +52,23 @@ func startSession(session *Session) {
 	}).Info("Session started")
 }
 
-func matchmake() {
-	if val, ok := os.LookupEnv("MATCHMAKER_MIN_PLAYERS"); ok {
+func updateMinPlayersForSession() {
+	if result, err := database.Get("MATCHMAKER_MIN_PLAYERS"); err == nil {
+		MinPlayersForSession, _ = strconv.Atoi(result)
+	} else if val, ok := os.LookupEnv("MATCHMAKER_MIN_PLAYERS"); ok {
 		MinPlayersForSession, _ = strconv.Atoi(val)
 	}
+}
+
+func matchmake() {
+	updateMinPlayersForSession()
 
 	mainMatchmaker = &Matchmaker{
 		queue: make(chan *Client, MinPlayersForSession),
 	}
 
 	for {
+		updateMinPlayersForSession()
 		matchmakingStart := time.Now()
 
 		currentSession := &Session{
