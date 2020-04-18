@@ -1,14 +1,11 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using BeatSaber99Client.Packets;
 using BeatSaber99Client.UI;
 using BS_Utils.Utilities;
-using HarmonyLib;
 using UnityEngine;
-using ReflectionUtil = CustomUI.Utilities.ReflectionUtil;
 
-namespace BeatSaber99Client
+namespace BeatSaber99Client.Session
 {
     public class Gameplay : MonoBehaviour
     {

@@ -2,7 +2,9 @@
 using System.IO;
 using System.Threading;
 using BeatSaber99Client.Assets;
+using BeatSaber99Client.Game;
 using BeatSaber99Client.Items;
+using BeatSaber99Client.Session;
 using BeatSaber99Client.UI;
 using BS_Utils.Gameplay;
 using BS_Utils.Utilities;

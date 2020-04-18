@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using BeatSaber99Client.Session;
 using BS_Utils.Utilities;
 using UnityEngine;
 using Random = UnityEngine.Random;

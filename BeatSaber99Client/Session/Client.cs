@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Reflection;
+using BeatSaber99Client.Game;
 using BeatSaber99Client.Packets;
 using BS_Utils.Gameplay;
 using Newtonsoft.Json;
@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 using WebSocket4Net;
 using WebSocket = WebSocket4Net.WebSocket;
 
-namespace BeatSaber99Client
+namespace BeatSaber99Client.Session
 {
     public static class Client
     {

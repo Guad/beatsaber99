@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using BeatSaber99Client.Packets;
+using BeatSaber99Client.Session;
 using BeatSaber99Client.UI;
-using UnityEngine;
 using UnityEngine;
 using UnityEngine.XR;
 
@@ -34,6 +34,7 @@ namespace BeatSaber99Client.Items
         {
             new GameObject("beatsaber99_itemmanager").AddComponent<ItemManager>();
         }
+
         void Start()
         {
             instance = this;

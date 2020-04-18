@@ -1,4 +1,4 @@
-﻿namespace BeatSaber99Client
+﻿namespace BeatSaber99Client.Game
 {
     public class PreloadedLevel
     {

@@ -1,4 +1,5 @@
-﻿using BeatSaber99Client.UI;
+﻿using BeatSaber99Client.Session;
+using BeatSaber99Client.UI;
 
 namespace BeatSaber99Client.Packets
 {

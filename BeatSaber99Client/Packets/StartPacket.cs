@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using BeatSaber99Client.Game;
+using BeatSaber99Client.Session;
 
 namespace BeatSaber99Client.Packets
 {

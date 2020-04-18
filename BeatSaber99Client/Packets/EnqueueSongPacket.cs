@@ -1,4 +1,6 @@
-﻿namespace BeatSaber99Client.Packets
+﻿using BeatSaber99Client.Session;
+
+namespace BeatSaber99Client.Packets
 {
     public class EnqueueSongPacket : IPacket
     {

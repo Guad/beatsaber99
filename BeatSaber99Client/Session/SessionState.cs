@@ -1,4 +1,4 @@
-﻿namespace BeatSaber99Client
+﻿namespace BeatSaber99Client.Session
 {
     public static class SessionState
     {

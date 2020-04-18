@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using BS_Utils.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace BeatSaber99Client
+namespace BeatSaber99Client.Game
 {
     public static class LevelLoader
     {

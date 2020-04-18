@@ -4,12 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using SongCore;
 using SongCore.Data;
 using SongCore.Utilities;
 using UnityEngine;
 
-namespace BeatSaber99Client
+namespace BeatSaber99Client.Game
 {
     public static class CustomSongInjector
     {

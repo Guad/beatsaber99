@@ -223,17 +223,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Sprites.cs" />
-    <Compile Include="Client.cs" />
-    <Compile Include="ClientStatus.cs" />
-    <Compile Include="CustomSongInjector.cs" />
-    <Compile Include="Executor.cs" />
-    <Compile Include="Gameplay.cs" />
-    <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="Session\Client.cs" />
+    <Compile Include="Session\ClientStatus.cs" />
+    <Compile Include="Game\CustomSongInjector.cs" />
+    <Compile Include="Game\Executor.cs" />
+    <Compile Include="Session\Gameplay.cs" />
+    <Compile Include="Game\HarmonyPatches.cs" />
     <Compile Include="Items\BeatmapSpawnManager.cs" />
     <Compile Include="Items\ItemManager.cs" />
     <Compile Include="Items\ItemTypes.cs" />
-    <Compile Include="Jukebox.cs" />
-    <Compile Include="LevelLoader.cs" />
+    <Compile Include="Session\Jukebox.cs" />
+    <Compile Include="Game\LevelLoader.cs" />
     <Compile Include="Packets\ActivateItemPacket.cs" />
     <Compile Include="Packets\ConnectionPacket.cs" />
     <Compile Include="Packets\EnqueueSongPacket.cs" />
@@ -242,11 +242,11 @@
     <Compile Include="Packets\PlayersLeftPacket.cs" />
     <Compile Include="Packets\UseItemPacket.cs" />
     <Compile Include="PluginConfig.cs" />
-    <Compile Include="SessionState.cs" />
+    <Compile Include="Session\SessionState.cs" />
     <Compile Include="Packets\StartPacket.cs" />
     <Compile Include="Packets\WinnerPacket.cs" />
     <Compile Include="Plugin.cs" />
-    <Compile Include="PreloadedLevel.cs" />
+    <Compile Include="Game\PreloadedLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Packets\EventLogPacket.cs" />
     <Compile Include="UI\DynamicText.cs" />
@@ -261,6 +261,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\Logo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "A:\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Plugins\$(TargetName).dll"</PostBuildEvent>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BeatSaber99Client.Assets;
 using BeatSaber99Client.Packets;
+using BeatSaber99Client.Session;
 using CustomUI.BeatSaber;
 using CustomUI.Utilities;
 using HMUI;

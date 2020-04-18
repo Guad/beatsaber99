@@ -1,17 +1,17 @@
 {
-  "author": "Guad",
+  "author": "Guad#8302",
   "description": [
-    "Beat Saber Battle Royale"
+    "Beat Saber 99 is a Battle Royale-like gamemode for Beat Saber. You can join a match and battle it out with other 99 players, in real time."
   ],
   "gameVersion": "1.9.0",
   "id": null,
   "name": "Beat Saber 99",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "features": [
   ],
   "links": {
     "project-home": "https://example.com/demo-plugin",
     "project-source": "https://github.com/exampleman/demo-plugin/",
-    "donate": "https://ko-fi.com/exampleman"
+    "donate": ""
   }
 }

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Linq;
+using BeatSaber99Client.Game;
 using BeatSaber99Client.Packets;
 using BeatSaber99Client.UI;
 using UnityEngine;
 
-namespace BeatSaber99Client
+namespace BeatSaber99Client.Session
 {
     public class Jukebox : MonoBehaviour
     {

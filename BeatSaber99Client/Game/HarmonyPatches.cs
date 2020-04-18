@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BeatSaber99Client.Session;
 using HarmonyLib;
 
-namespace BeatSaber99Client
+namespace BeatSaber99Client.Game
 {
     public static class HarmonyPatcher
     {
@@ -32,10 +33,7 @@ namespace BeatSaber99Client
 
         }
     }
-}
 
-namespace BeatSaber99Client.OverriddenClasses
-{
     [HarmonyPatch(typeof(RichPresenceManager))]
     [HarmonyPatch("HandleGameScenesManagerTransitionDidFinish")]
     class RichPresenceBugFix
