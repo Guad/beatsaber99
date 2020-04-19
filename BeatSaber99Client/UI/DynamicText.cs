@@ -78,20 +78,6 @@ namespace BeatSaber99Client.UI
 
             _canvas.transform.position = _basePosition;
             _canvas.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-
-            // StartCoroutine(ChangeText());
-        }
-
-        IEnumerator ChangeText()
-        {
-            yield return new WaitForSeconds(2.0f);
-            text.text = "This text has changed!";
-
-        }
-
-        void Destroy()
-        {
-
         }
     }
 }

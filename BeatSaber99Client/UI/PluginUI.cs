@@ -89,7 +89,6 @@ namespace BeatSaber99Client.UI
 
         public void SetupIngameUI()
         {
-            // BeatmapObjectSpawnController
             if (winnerText != null)
                 winnerText.Delete();
             if (playersLeftText != null)

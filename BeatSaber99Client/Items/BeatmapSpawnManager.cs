@@ -16,8 +16,6 @@ namespace BeatSaber99Client.Items
 
         public static void Init()
         {
-            // beatmapObjectManager = Resources.FindObjectsOfTypeAll<BeatmapObjectManager>().FirstOrDefault();
-            // 
 
             if (instance == null)
                 instance = new GameObject("beatsaber99_spawnmanager").AddComponent<BeatmapSpawnManager>();

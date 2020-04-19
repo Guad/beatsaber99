@@ -93,15 +93,6 @@ namespace BeatSaber99Client.Game
         private static void StartLevel(IBeatmapLevel level, BeatmapCharacteristicSO characteristic,
             BeatmapDifficulty difficulty, GameplayModifiers modifiers, float startTime = 0f)
         {
-            /*Client.Instance.playerInfo.updateInfo.playerComboBlocks = 0;
-            Client.Instance.playerInfo.updateInfo.playerCutBlocks = 0;
-            Client.Instance.playerInfo.updateInfo.playerTotalBlocks = 0;
-            Client.Instance.playerInfo.updateInfo.playerEnergy = 0f;
-            Client.Instance.playerInfo.updateInfo.playerScore = 0;
-            Client.Instance.playerInfo.updateInfo.playerLevelOptions = new LevelOptionsInfo(difficulty, modifiers, characteristic.serializedName);*/
-
-            // UpdateLevelOptions
-
             var menuSceneSetupData = Resources.FindObjectsOfTypeAll<MenuTransitionsHelper>().FirstOrDefault();
 
 
@@ -119,10 +110,7 @@ namespace BeatSaber99Client.Game
 
 
                 var difficultyBeatmap = level.GetDifficultyBeatmap(characteristic, difficulty, false);
-
-                Plugin.log.Debug(
-                    $"Starting song: name={level.songName}, levelId={level.levelID}, difficulty={difficulty}");
-
+                
                 try
                 {
                     BS_Utils.Gameplay.Gamemode.NextLevelIsIsolated("TestMod");
@@ -143,14 +131,7 @@ namespace BeatSaber99Client.Game
 
                     practiceSettings.songSpeedMul = modifiers.songSpeedMul;
                 }
-
-                var scoreSaber = IPA.Loader.PluginManager.GetPluginFromId("ScoreSaber");
-
-                if (scoreSaber != null)
-                {
-                    // ScoreSaberInterop.InitAndSignIn();
-                }
-
+                
                 menuSceneSetupData.StartStandardLevel(
                     difficultyBeatmap,
                     environmentOverrideSettings,
@@ -182,8 +163,6 @@ namespace BeatSaber99Client.Game
 
             var token = new CancellationTokenSource();
 
-            Plugin.log.Info("Checking entitlement");
-
             var previewCache = _beatmapLevelsModel
                 .GetPrivateField<Dictionary<string, IPreviewBeatmapLevel>>("_loadedPreviewBeatmapLevels");
 
@@ -191,7 +170,6 @@ namespace BeatSaber99Client.Game
             {
                 previewCache.Add(selectedLevel.levelID, selectedLevel);
                 _beatmapLevelsModel.SetPrivateField("_loadedPreviewBeatmapLevels", previewCache);
-                Plugin.log.Info("Updated internal cache");
             }
 
             var entitlementStatus =
@@ -199,40 +177,28 @@ namespace BeatSaber99Client.Game
 
             if (entitlementStatus == AdditionalContentModel.EntitlementStatus.Owned)
             {
-                Plugin.log.Info("Level owned. Loading...");
-
                 var getBeatmapLevelResult =
                     await _beatmapLevelsModel.GetBeatmapLevelAsync(selectedLevel.levelID, token.Token);
 
-                Plugin.log.Info("Level preload complete.");
-
                 if (getBeatmapLevelResult.isError)
                 {
-                    Plugin.log.Info("Beatmap level load failure.");
                     callback?.Invoke(null);
                     return;
                 }
-
-                Plugin.log.Info("Level preload 1.");
+                
                 var playerData = Resources.FindObjectsOfTypeAll<PlayerDataModel>().FirstOrDefault().playerData;
-                Plugin.log.Info("Level preload 2.");
 
                 var playerSettings = playerData.playerSpecificSettings;
-                Plugin.log.Info("Level preload 3.");
                 var environmentOverrideSettings = playerData.overrideEnvironmentSettings;
-                Plugin.log.Info("Level preload 4.");
 
                 var colorSchemesSettings = playerData.colorSchemesSettings.overrideDefaultColors
                     ? playerData.colorSchemesSettings.GetColorSchemeForId(playerData.colorSchemesSettings
                         .selectedColorSchemeId)
                     : null;
 
-                Plugin.log.Info("Level preload 5.");
-
+                
                 var difficultyBeatmap =
                     getBeatmapLevelResult.beatmapLevel.GetDifficultyBeatmap(characteristic, difficulty, false);
-
-                Plugin.log.Info("Level preload 6.");
 
                 callback?.Invoke(new PreloadedLevel()
                 {
@@ -283,13 +249,6 @@ namespace BeatSaber99Client.Game
 
                     practiceSettings.songSpeedMul = level.speed != 1f ? level.speed : level.modifiers.songSpeedMul;
                 }
-
-                // var scoreSaber = IPA.Loader.PluginManager.GetPluginFromId("ScoreSaber");
-
-                // if (scoreSaber != null)
-                // {
-                // ScoreSaberInterop.InitAndSignIn();
-                // }
 
                 var transition = Resources.FindObjectsOfTypeAll<StandardLevelScenesTransitionSetupDataSO>().First();
                 transition.Init(

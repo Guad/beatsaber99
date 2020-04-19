@@ -23,7 +23,6 @@ namespace BeatSaber99Client.Session
 
             BSEvents.energyDidChange += BSEvents_energyDidChange;
             BSEvents.energyReachedZero += BSEventsOnenergyReachedZero;
-            // BSEvents.scoreDidChange += BSEvents_scoreDidChange;
 
             BSEvents.levelFailed += BSEvents_levelFailed;
             BSEvents.levelCleared += BSEvents_levelCleared;
@@ -32,7 +31,6 @@ namespace BeatSaber99Client.Session
 
             BSEvents.comboDidChange += BSEventsOncomboDidChange;
 
-            BSEvents.levelSelected += BSEventsOnlevelSelected;
 
             var t = new Thread(DataSender);
             t.Start();
@@ -72,11 +70,6 @@ namespace BeatSaber99Client.Session
 
                 Thread.Sleep(1000);
             }
-        }
-
-        private void BSEventsOnlevelSelected(LevelCollectionViewController arg1, IPreviewBeatmapLevel arg2)
-        {
-            Plugin.log.Info($"Selected: {arg2.songName} - {arg2.songAuthorName} ({arg2.levelID})");
         }
 
         private void BSEventsOnlevelQuit(StandardLevelScenesTransitionSetupDataSO arg1, LevelCompletionResults arg2)

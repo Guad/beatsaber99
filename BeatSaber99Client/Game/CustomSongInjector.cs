@@ -61,7 +61,6 @@ namespace BeatSaber99Client.Game
 
                 string songDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
-                // TODO: Handle exceptions
                 try
                 {
                     System.IO.Compression.ZipFile.ExtractToDirectory(tmpPath, songDirectory);
