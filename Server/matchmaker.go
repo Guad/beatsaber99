@@ -22,7 +22,7 @@ var MinPlayersForSession = 1
 func startSession(session *Session) {
 	starterSong := songs.PickRandomOfficialSong()
 	starterDifficulty := "Expert"
-	numSongsToSend := 15
+	numSongsToSend := 25
 
 	session.Send(StartPacket{
 		TotalPlayers: len(session.players),

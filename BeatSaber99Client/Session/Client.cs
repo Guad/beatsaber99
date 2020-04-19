@@ -124,10 +124,17 @@ namespace BeatSaber99Client.Session
 
         public static void Cleanup()
         {
-            _client.Dispose();
-            _client = null;
+            try
+            {
+                Status = ClientStatus.Waiting;
+                _client.Dispose();
+            }
+            catch (Exception e)
+            {
+                Plugin.log.Error(e);
+            }
 
-            Status = ClientStatus.Waiting;
+            _client = null;
         }
     }
 }

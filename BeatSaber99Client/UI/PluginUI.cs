@@ -238,12 +238,21 @@ namespace BeatSaber99Client.UI
             switch (e)
             {
                 case ClientStatus.Waiting:
-                    if (Client.Status == ClientStatus.Playing)
-                        hudText.text = $"Placed: {SessionState.PlayersLeft}";
-                    else
-                        hudText.text = $"";
+                    hudText.text = Client.Status == ClientStatus.Playing ? $"Placed: {SessionState.PlayersLeft}" : $"";
 
-                    playersLeftText?.gameObject.SetActive(false);
+                    if (Client.Status == ClientStatus.Playing)
+                    {
+                        if (winnerText != null) 
+                            winnerText.Delete();
+                        if (playersLeftText != null)
+                            playersLeftText.Delete();
+                        if (itemText != null)
+                            itemText.Delete();
+
+                        winnerText = playersLeftText = itemText = null;
+                    }
+
+                    playersLeftText?.gameObject?.SetActive(false);
                     SetCurrentItem(null);
 
                     BeatSaberUI.SetButtonText(_multiplayerButton, ButtonText);
@@ -255,9 +264,10 @@ namespace BeatSaber99Client.UI
                     hudText.text = "Connecting...";
                     break;
                 case ClientStatus.Matchmaking:
-                    hudText.text = "Matchmaking...";
                     BeatSaberUI.SetButtonText(_multiplayerButton, "CANCEL");
                     _multiplayerButton.interactable = true;
+                    hudText.text = "Matchmaking...";
+                    hudText.gameObject.SetActive(true);
                     SetWinnerText(false);
                     break;
                 case ClientStatus.Playing:

@@ -52,6 +52,8 @@ namespace BeatSaber99Client.UI
 
         void Awake()
         {
+            DontDestroyOnLoad(gameObject);
+
             _canvas = gameObject.AddComponent<Canvas>();
             _canvas.renderMode = RenderMode.WorldSpace;
             var collider = gameObject.AddComponent<MeshCollider>();
