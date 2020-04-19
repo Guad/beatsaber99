@@ -10,7 +10,7 @@
         public static string CurrentItem;
         public static void Clean()
         {
-            PlayersLeft = 99;
+            PlayersLeft = 100;
             CurrentCombo = 0;
             Score = 0;
             Energy = 0;

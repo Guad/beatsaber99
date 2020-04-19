@@ -111,7 +111,7 @@ namespace BeatSaber99Client.UI
                 8.0f
             );
 
-            playersLeftText.text.text = "Players Left: " + SessionState.PlayersLeft;
+            playersLeftText.text.text = "Opponents: " + (SessionState.PlayersLeft - 1);
 
             _eventLog = new DynamicText[3];
 
@@ -223,7 +223,7 @@ namespace BeatSaber99Client.UI
 
             if (playersLeftText != null)
             {
-                playersLeftText.text.text = "Players Left: " + left;
+                playersLeftText.text.text = "Opponents: " + (left - 1);
             }
         }
 
@@ -242,14 +242,12 @@ namespace BeatSaber99Client.UI
 
                     if (Client.Status == ClientStatus.Playing)
                     {
-                        if (winnerText != null) 
-                            winnerText.Delete();
                         if (playersLeftText != null)
                             playersLeftText.Delete();
                         if (itemText != null)
                             itemText.Delete();
 
-                        winnerText = playersLeftText = itemText = null;
+                        playersLeftText = itemText = null;
                     }
 
                     playersLeftText?.gameObject?.SetActive(false);

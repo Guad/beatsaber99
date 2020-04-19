@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	ItemDropChance            = 0.03
+	ItemDropChance            = 0.02
 	ItemChanceChangePerSecond = 0.004
 	ItemMinCombo              = 70
 	OnFireMinCombo            = 200

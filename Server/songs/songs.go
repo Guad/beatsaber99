@@ -29,7 +29,7 @@ var OfficialSongsIDs = []string{
 	"AngelVoices",
 	"ExitThisEarthsAtomosphere",
 	"Ghost",
-	"LightItUp",
+	// "LightItUp", // Long & annoying
 	"Crystallized",
 	"CycleHit",
 	"WhatTheCat",
