@@ -34,9 +34,6 @@
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Libs\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="BeatSaberCustomUI">
-      <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Plugins\BeatSaberCustomUI.dll</HintPath>
-    </Reference>
     <Reference Include="BSML">
       <HintPath>..\..\..\..\..\..\Oculus\Software\Software\hyperbolic-magnetism-beat-saber\Plugins\BSML.dll</HintPath>
     </Reference>

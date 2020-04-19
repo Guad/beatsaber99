@@ -1,17 +1,17 @@
 {
   "author": "Guad#8302",
-  "description": [
-    "Beat Saber 99 is a Battle Royale-like gamemode for Beat Saber. You can join a match and battle it out with other 99 players, in real time. Use defensive items to your advantage and offensive items to hinder your opponents. Achieve the victory royale by being the last one swinging."
-  ],
+  "description": "Beat Saber 99 is a Battle Royale-like gamemode for Beat Saber. You can join a match and battle it out with other 99 players, in real time. Use defensive items to your advantage and offensive items to hinder your opponents. Achieve the victory royale by being the last one swinging.",
+  "icon": "BeatSaber99Client.Assets.Logo.png",
   "gameVersion": "1.9.0",
-  "id": null,
+  "id": "BeatSaber99",
   "name": "Beat Saber 99",
   "version": "1.0.0",
-  "features": [
-  ],
+  "dependsOn": {
+    "BS Utils": "^1.4.8",
+    "BeatSaberMarkupLanguage": "^1.1.5"
+  },
   "links": {
     "project-home": "https://example.com/demo-plugin",
-    "project-source": "https://github.com/exampleman/demo-plugin/",
-    "donate": "https://example.com/demo-plugin"
+    "project-source": "https://github.com/exampleman/demo-plugin/"
   }
 }
