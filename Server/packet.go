@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 
+	"github.com/guad/bsaber99/util"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -144,7 +146,7 @@ type TimeSynchronizationPacket struct {
 }
 
 func (p TimeSynchronizationPacket) Dispatch(sender *Client) {
-	now := getUnixTimestampMilliseconds()
+	now := util.GetUnixTimestampMilliseconds()
 
 	p.ProcessTime = now
 

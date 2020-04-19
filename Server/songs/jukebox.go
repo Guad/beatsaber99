@@ -1,10 +1,10 @@
 package songs
 
 import (
-	"math/rand"
 	"strconv"
 
 	"github.com/guad/bsaber99/db"
+	"github.com/guad/bsaber99/util"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -33,7 +33,7 @@ func PickRandomCustomSong(db *db.DB) string {
 }
 
 func pickRandomElementFromList(songs []string) string {
-	choice := rand.Intn(len(songs))
+	choice := util.CryptoIntn(len(songs))
 	song := songs[choice]
 	return song
 }

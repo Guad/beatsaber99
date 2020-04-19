@@ -22,7 +22,7 @@ var OfficialSongsIDs = []string{
 	"GiveALittleLove",
 	"Immortal",
 	"BurningSands",
-	"FitBeat",
+	//	"FitBeat", // It's in the custom song rotation
 	"CrabRave",
 	"PopStars",
 	"OneHope",

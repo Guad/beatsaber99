@@ -1,13 +1,15 @@
-package main
+package util
 
 import (
+	"crypto/rand"
+	"math/big"
 	"net"
 	"net/http"
 	"strings"
 	"time"
 )
 
-func removePort(ip net.Addr) string {
+func RemovePort(ip net.Addr) string {
 	switch addr := ip.(type) {
 	case *net.TCPAddr:
 		return addr.IP.String()
@@ -16,7 +18,7 @@ func removePort(ip net.Addr) string {
 	return ip.String()
 }
 
-func getClientIP(r *http.Request) string {
+func GetClientIP(r *http.Request) string {
 	if r.Header.Get("X-Forwarded-For") != "" {
 		s := strings.Split(r.Header.Get("X-Forwarded-For"), " ")
 		return s[len(s)-1]
@@ -29,6 +31,19 @@ func getClientIP(r *http.Request) string {
 	return ""
 }
 
-func getUnixTimestampMilliseconds() int64 {
+func GetUnixTimestampMilliseconds() int64 {
 	return time.Now().UnixNano() / 1000000
+}
+
+func CryptoIntn(n int) int {
+	max := big.NewInt(int64(n))
+	result, _ := rand.Int(rand.Reader, max)
+
+	return int(result.Int64())
+}
+
+func CryptoFloat64() float64 {
+	result := CryptoIntn(0x7FFFFFFF)
+
+	return float64(result) / float64(0x7FFFFFFF)
 }

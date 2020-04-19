@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/guad/bsaber99/util"
+
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
@@ -64,7 +66,7 @@ func clientLoop(ws *websocket.Conn, realip string) {
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
-	realip := getClientIP(r)
+	realip := util.GetClientIP(r)
 	ws, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {

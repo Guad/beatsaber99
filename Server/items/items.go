@@ -25,9 +25,10 @@ const (
 )
 
 var (
-	ItemDropChance = 0.05
-	ItemMinCombo   = 70
-	OnFireMinCombo = 200
+	ItemDropChance            = 0.03
+	ItemChanceChangePerSecond = 0.004
+	ItemMinCombo              = 70
+	OnFireMinCombo            = 200
 )
 
 var AllItems = []ItemType{
@@ -70,6 +71,7 @@ func UpdateChancesFromRedis(db *db.DB) {
 	ItemMinCombo = int(fetchFloat(db, "ITEM_MIN_COMBO", float64(ItemMinCombo)))
 	ItemDropChance = fetchFloat(db, "ITEM_DROP_CHANCE", ItemDropChance)
 	OnFireMinCombo = int(fetchFloat(db, "ONFIRE_MIN_COMBO", float64(OnFireMinCombo)))
+	ItemChanceChangePerSecond = fetchFloat(db, "ITEM_CHANCE_CHANGE_PER_SECOND", ItemChanceChangePerSecond)
 }
 
 func fetchFloat(db *db.DB, key string, orelse float64) float64 {

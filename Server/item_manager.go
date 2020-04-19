@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
+
+	"github.com/guad/bsaber99/util"
 
 	"github.com/guad/bsaber99/items"
 	log "github.com/sirupsen/logrus"
@@ -14,17 +15,27 @@ type ItemManager struct {
 
 	currentAttacker *Client
 	attackTime      time.Time
+	comboStart      time.Time
 
 	currentItem *items.ItemType
 }
 
 func (im *ItemManager) Tick() {
 	if im.currentItem == nil && im.client.lastState.CurrentCombo > items.ItemMinCombo {
-		// Roll for item
-		if rand.Float64() < items.ItemDropChance {
-			// Choose item
-			chosen := rand.Intn(len(items.AllItems))
+		chance := items.ItemDropChance
 
+		seconds := time.Now().Sub(im.comboStart).Seconds()
+		chance += seconds * items.ItemChanceChangePerSecond
+
+		if chance > 1.0 {
+			chance = 1.0
+		}
+
+		// Roll for item
+		if util.CryptoFloat64() < items.ItemDropChance {
+			// Choose item
+			chosen := util.CryptoIntn(len(items.AllItems))
+			im.comboStart = time.Now()
 			im.currentItem = &items.AllItems[chosen]
 
 			im.client.Send(EventLogPacket{
@@ -108,7 +119,7 @@ func (im *ItemManager) chooseRandomOpponent() *Client {
 	defer im.client.session.RUnlock()
 
 	for target == nil {
-		indx := rand.Intn(len(im.client.session.players))
+		indx := util.CryptoIntn(len(im.client.session.players))
 
 		if im.client.session.players[indx] != im.client {
 			target = im.client.session.players[indx]

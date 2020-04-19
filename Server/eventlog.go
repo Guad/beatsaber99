@@ -67,6 +67,12 @@ func createFunnyMessageForStateUpdate(sender *Client, packet PlayerStateUpdatePa
 		})
 	}
 
+	// Player entered combo
+	if sender.lastState.CurrentCombo < packet.CurrentCombo &&
+		packet.CurrentCombo > items.ItemMinCombo {
+		sender.items.comboStart = time.Now()
+	}
+
 	if sender.lastState.CurrentCombo < items.OnFireMinCombo &&
 		packet.CurrentCombo > items.OnFireMinCombo {
 		chosen := rand.Intn(len(funnyOnFireMessage))

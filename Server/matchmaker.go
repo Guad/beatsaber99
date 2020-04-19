@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/guad/bsaber99/util"
+
 	"github.com/google/uuid"
 	"github.com/guad/bsaber99/items"
 	"github.com/guad/bsaber99/songs"
@@ -24,7 +26,7 @@ func startSession(session *Session) {
 	starterDifficulty := "Expert"
 	numSongsToSend := 25
 
-	starttime := getUnixTimestampMilliseconds() + 5000
+	starttime := util.GetUnixTimestampMilliseconds() + 5000
 
 	session.Send(StartPacket{
 		TotalPlayers:    len(session.players),
