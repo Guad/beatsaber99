@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func removePort(ip net.Addr) string {
@@ -26,4 +27,8 @@ func getClientIP(r *http.Request) string {
 	}
 
 	return ""
+}
+
+func getUnixTimestampMilliseconds() int64 {
+	return time.Now().UnixNano() / 1000000
 }

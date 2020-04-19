@@ -21,17 +21,18 @@ func (bp BasePacket) Dispatch(sender *Client) {
 		p := ConnectionPacket{}
 		json.Unmarshal(bp.data, &p)
 		p.Dispatch(sender)
-		break
 	case "PlayerStateUpdatePacket":
 		p := PlayerStateUpdatePacket{}
 		json.Unmarshal(bp.data, &p)
 		p.Dispatch(sender)
-		break
 	case "ActivateItemPacket":
 		p := ActivateItemPacket{}
 		json.Unmarshal(bp.data, &p)
 		p.Dispatch(sender)
-		break
+	case "TimeSynchronizationPacket":
+		p := TimeSynchronizationPacket{}
+		json.Unmarshal(bp.data, &p)
+		p.Dispatch(sender)
 	}
 }
 
@@ -72,10 +73,11 @@ func (p ConnectionPacket) Dispatch(sender *Client) {
 }
 
 type StartPacket struct {
-	Type         string `json:"type,omitempty"`
-	TotalPlayers int    `json:"TotalPlayers,omitempty"`
-	Difficulty   string `json:"Difficulty,omitempty"`
-	LevelID      string `json:"LevelID,omitempty"`
+	Type            string `json:"type,omitempty"`
+	TotalPlayers    int    `json:"TotalPlayers,omitempty"`
+	Difficulty      string `json:"Difficulty,omitempty"`
+	LevelID         string `json:"LevelID,omitempty"`
+	ServerStartTime int64  `json:"ServerStartTime,omitempty"`
 }
 
 type PlayersLeftPacket struct {
@@ -133,4 +135,20 @@ func (p ActivateItemPacket) Dispatch(sender *Client) {
 	}
 
 	sender.items.ActivateItem()
+}
+
+type TimeSynchronizationPacket struct {
+	Type        string `json:"type,omitempty"`
+	PeerTime    int64  `json:"PeerTime,omitempty"`
+	ProcessTime int64  `json:"ProcessTime,omitempty"`
+}
+
+func (p TimeSynchronizationPacket) Dispatch(sender *Client) {
+	log.Println("Time sync packet received")
+
+	now := getUnixTimestampMilliseconds()
+
+	p.ProcessTime = now
+
+	sender.Send(p)
 }

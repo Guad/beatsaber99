@@ -5,6 +5,7 @@
         Waiting,
         Connecting,
         Matchmaking,
+        Starting,
         Playing,
     }
 }

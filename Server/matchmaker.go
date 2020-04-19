@@ -24,11 +24,14 @@ func startSession(session *Session) {
 	starterDifficulty := "Expert"
 	numSongsToSend := 25
 
+	starttime := getUnixTimestampMilliseconds() + 5000
+
 	session.Send(StartPacket{
-		TotalPlayers: len(session.players),
-		Type:         "StartPacket",
-		Difficulty:   starterDifficulty,
-		LevelID:      starterSong,
+		TotalPlayers:    len(session.players),
+		Type:            "StartPacket",
+		Difficulty:      starterDifficulty,
+		LevelID:         starterSong,
+		ServerStartTime: starttime,
 	})
 
 	choices := songs.PickNCustomSongs(numSongsToSend, database)

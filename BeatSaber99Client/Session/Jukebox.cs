@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BeatSaber99Client.Game;
 using BeatSaber99Client.Packets;
@@ -9,7 +9,7 @@ namespace BeatSaber99Client.Session
 {
     public class Jukebox : MonoBehaviour
     {
-        public static ConcurrentQueue<EnqueueSongPacket> SongQueue = new ConcurrentQueue<EnqueueSongPacket>();
+        public static Queue<EnqueueSongPacket> SongQueue = new Queue<EnqueueSongPacket>();
         public static Jukebox instance;
 
         public float songStart;
@@ -31,7 +31,7 @@ namespace BeatSaber99Client.Session
         {
             if (e == ClientStatus.Waiting)
             {
-                SongQueue = new ConcurrentQueue<EnqueueSongPacket>();
+                SongQueue = new Queue<EnqueueSongPacket>();
             }
         }
 
@@ -82,66 +82,65 @@ namespace BeatSaber99Client.Session
 
         private void PreloadSong()
         {
-            if (SongQueue.TryDequeue(out var song))
+            var song = SongQueue.Dequeue();
+            
+            Plugin.log.Info($"Preloading song {song.LevelID}");
+
+            songPreloaded = true;
+
+            var characteristic = LevelLoader.Characteristics.First(c => c.serializedName == song.Characteristic);
+            var gameplay = GameplayModifiers.defaultModifiers;
+
+
+            if (song.LevelID.StartsWith("bsaber.com/"))
             {
-                Plugin.log.Info($"Preloading song {song.LevelID}");
-
-                songPreloaded = true;
-
-                var characteristic = LevelLoader.Characteristics.First(c => c.serializedName == song.Characteristic);
-                var gameplay = GameplayModifiers.defaultModifiers;
-
-
-                if (song.LevelID.StartsWith("bsaber.com/"))
-                {
-                    var split = song.LevelID.Split('/');
-                    CustomSongInjector.StartSongDownload("https://beatsaver.com/api/download/key/" + split[1],
-                        (level) =>
-                        {
-                            LevelLoader.PreloadBeatmapLevelAsync(
-                                characteristic,
-                                level,
-                                song.Difficulty,
-                                gameplay,
-                                (preloadedLevel) =>
+                var split = song.LevelID.Split('/');
+                CustomSongInjector.StartSongDownload("https://beatsaver.com/api/download/key/" + split[1],
+                    (level) =>
+                    {
+                        LevelLoader.PreloadBeatmapLevelAsync(
+                            characteristic,
+                            level,
+                            song.Difficulty,
+                            gameplay,
+                            (preloadedLevel) =>
+                            {
+                                if (preloadedLevel == null)
                                 {
-                                    if (preloadedLevel == null)
-                                    {
-                                        Plugin.log.Info("Level did not preload correctly..");
-                                        return;
-                                    }
-
-                                    nextLevel = preloadedLevel;
-                                    nextLevel.speed = (float)song.Speed;
-
-                                    Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
+                                    Plugin.log.Info("Level did not preload correctly..");
+                                    return;
                                 }
-                            );
-                        },
-                        () =>
-                        {
-                            // Download fail, wat do?
-                            Plugin.log.Error("Download failed. Leaving session...");
-                            Client.Disconnect();
-                        });
-                }
-                else
-                {
-                    var level = LevelLoader.AllLevels.First(l => l.levelID == song.LevelID);
-                    LevelLoader.PreloadBeatmapLevelAsync(
-                        characteristic,
-                        level,
-                        song.Difficulty,
-                        gameplay,
-                        (preloadedLevel) =>
-                        {
-                            nextLevel = preloadedLevel;
 
-                            nextLevel.speed = (float)song.Speed;
-                            Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
-                        }
-                    );
-                }
+                                nextLevel = preloadedLevel;
+                                nextLevel.speed = (float)song.Speed;
+
+                                Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
+                            }
+                        );
+                    },
+                    () =>
+                    {
+                        // Download fail, wat do?
+                        Plugin.log.Error("Download failed. Leaving session...");
+                        Client.Disconnect();
+                    });
+            }
+            else
+            {
+                var level = LevelLoader.AllLevels.First(l => l.levelID == song.LevelID);
+                LevelLoader.PreloadBeatmapLevelAsync(
+                    characteristic,
+                    level,
+                    song.Difficulty,
+                    gameplay,
+                    (preloadedLevel) =>
+                    {
+                        nextLevel = preloadedLevel;
+
+                        nextLevel.speed = (float)song.Speed;
+                        Plugin.log.Info($"Song {song.LevelID} has been preloaded!");
+                    }
+                );
             }
         }
 

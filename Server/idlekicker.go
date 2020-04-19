@@ -67,6 +67,6 @@ func StartIdlekickerForSession(session *Session) {
 			}
 		}
 		session.RUnlock()
-		time.Sleep(30 * time.Second)
+		time.Sleep(40 * time.Second)
 	}
 }

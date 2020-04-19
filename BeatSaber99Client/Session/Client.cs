@@ -14,6 +14,8 @@ namespace BeatSaber99Client.Session
 {
     public static class Client
     {
+        public static long ServerTimeOffset;
+
         private static ClientStatus _status;
         public static ClientStatus Status
         {
@@ -22,7 +24,15 @@ namespace BeatSaber99Client.Session
             {
                 if (value != _status)
                 {
-                    ClientStatusChanged?.Invoke(null, value);
+                    Plugin.log.Debug($"Client status changed from {_status} to {value}");
+                    try
+                    {
+                        ClientStatusChanged?.Invoke(null, value);
+                    }
+                    catch (Exception e)
+                    {
+                        Plugin.log.Error(e);
+                    }
                 }
 
                 _status = value;
@@ -60,20 +70,11 @@ namespace BeatSaber99Client.Session
 
             _client.Opened += (sender, args) =>
             {
-                // We are connected and automatically matchmaking.
-                Plugin.log.Info("Connection created");
+                Plugin.log.Info("Connection successful...");
 
-                var id = GetUserInfo.GetUserID();
-                var name = GetUserInfo.GetUserName();
-                var platform = GetUserInfo.GetPlatformInfo();
-
-                Status = ClientStatus.Matchmaking;
-                _client.Send(JsonConvert.SerializeObject(new ConnectionPacket()
+                _client.Send(JsonConvert.SerializeObject(new TimeSynchronizationPacket()
                 {
-                    id = id.ToString(),
-                    name = name,
-                    platform = platform.serialzedName,
-                    version = Version.VersionNumber,
+                    PeerTime = TimeSynchronizationPacket.UnixTimeMilliseconds(),
                 }));
             };
 
@@ -102,6 +103,28 @@ namespace BeatSaber99Client.Session
             }
         }
 
+        public static void StartMatchmaking()
+        {
+            if (Client.Status != ClientStatus.Connecting) return;
+
+            // We are connected and automatically matchmaking.
+            Plugin.log.Info("Started matchmaking...");
+
+            var id = GetUserInfo.GetUserID();
+            var name = GetUserInfo.GetUserName();
+            var platform = GetUserInfo.GetPlatformInfo();
+
+
+            Status = ClientStatus.Matchmaking;
+            _client.Send(JsonConvert.SerializeObject(new ConnectionPacket()
+            {
+                id = id.ToString(),
+                name = name,
+                platform = platform.serialzedName,
+                version = Version.VersionNumber,
+            }));
+        }
+
         private static void ClientOnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             var json = JObject.Parse(e.Message);
@@ -124,9 +147,12 @@ namespace BeatSaber99Client.Session
 
         public static void Cleanup()
         {
+            ServerTimeOffset = 0;
+
+            Status = ClientStatus.Waiting;
+
             try
             {
-                Status = ClientStatus.Waiting;
                 _client.Dispose();
             }
             catch (Exception e)

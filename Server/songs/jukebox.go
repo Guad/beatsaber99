@@ -43,6 +43,10 @@ func PickNCustomSongs(n int, db *db.DB) []Song {
 
 	choices := []Song{}
 
+	if n > len(cache.songList) {
+		n = len(cache.songList)
+	}
+
 	for len(choices) < n {
 		song := pickRandomElementFromList(cache.songList)
 		dup := false

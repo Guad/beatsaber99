@@ -220,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Sprites.cs" />
+    <Compile Include="Packets\TimeSynchronizationPacket.cs" />
     <Compile Include="Session\Client.cs" />
     <Compile Include="Session\ClientStatus.cs" />
     <Compile Include="Game\CustomSongInjector.cs" />

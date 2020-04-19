@@ -270,9 +270,15 @@ namespace BeatSaber99Client.UI
                     hudText.gameObject.SetActive(true);
                     SetWinnerText(false);
                     break;
+                case ClientStatus.Starting:
+                    hudText.text = "Starting...";
+                    BeatSaberUI.SetButtonText(_multiplayerButton, ButtonText);
+                    _multiplayerButton.interactable = false;
+                    hudText.gameObject.SetActive(true);
+                    break;
                 case ClientStatus.Playing:
                     _log_history = new string[3];
-                    hudText.text = "Starting...";
+                    hudText.text = "";
                     break;
             }
         }
