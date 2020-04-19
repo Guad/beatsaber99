@@ -45,10 +45,11 @@ func (c *Client) Send(packet interface{}) {
 	c.conn.WriteJSON(packet)
 }
 
-func (c *Client) Kick() {
+func (c *Client) Kick(reason string) {
 	c.Lock()
 	defer c.Unlock()
 
+	c.conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(1000, reason), time.Now().Add(500*time.Millisecond))
 	c.conn.Close()
 }
 

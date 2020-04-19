@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BeatSaber99Client.Game;
 using BeatSaber99Client.Packets;
+using BeatSaber99Client.UI;
 using BS_Utils.Gameplay;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -87,6 +88,12 @@ namespace BeatSaber99Client.Session
             _client.Closed += (sender, args) =>
             {
                 Cleanup();
+
+                if (args is ClosedEventArgs m && !string.IsNullOrEmpty(m.Reason))
+                {
+                    Plugin.log.Info($"Connection closed, code {m.Code}, reason: {m.Reason}");
+                    PluginUI.hudText.text = m.Reason;
+                }
             };
 
             _client.MessageReceived += ClientOnMessageReceived;

@@ -35,13 +35,15 @@ func StartIdlekicker() {
 				"state":       string(player.state),
 			}).Info("Kicked user for not sending initial packet")
 
-			player.Kick()
+			player.Kick("You were idle")
 		}
 	}
 }
 
 func StartIdlekickerForSession(session *Session) {
 	for session.state == Playing {
+		time.Sleep(30 * time.Second)
+
 		session.RLock()
 		for _, p := range session.players {
 			if p.oldScore == -1 {
@@ -61,12 +63,11 @@ func StartIdlekickerForSession(session *Session) {
 					"state":       string(p.state),
 					"score":       p.Score(),
 				}).Info("Kicked user for idling in gameplay")
-				p.Kick()
+				p.Kick("You were idle")
 			} else {
 				p.oldScore = p.lastState.Score
 			}
 		}
 		session.RUnlock()
-		time.Sleep(40 * time.Second)
 	}
 }

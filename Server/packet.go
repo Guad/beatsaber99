@@ -59,7 +59,7 @@ func (p ConnectionPacket) Dispatch(sender *Client) {
 			"our_version": Version,
 		}).Info("User with lower version kicked")
 
-		sender.Kick()
+		sender.Kick("BS99 version out of date")
 	} else {
 		log.WithFields(log.Fields{
 			"name":     sender.name,
@@ -144,8 +144,6 @@ type TimeSynchronizationPacket struct {
 }
 
 func (p TimeSynchronizationPacket) Dispatch(sender *Client) {
-	log.Println("Time sync packet received")
-
 	now := getUnixTimestampMilliseconds()
 
 	p.ProcessTime = now
