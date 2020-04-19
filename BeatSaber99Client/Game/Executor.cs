@@ -6,6 +6,7 @@ namespace BeatSaber99Client.Game
 {
     public class Executor : MonoBehaviour
     {
+        public static Executor instance;
         public static void Init()
         {
             new GameObject("beatsaber99_executor").AddComponent<Executor>();
@@ -31,6 +32,7 @@ namespace BeatSaber99Client.Game
         public void Start()
         {
             DontDestroyOnLoad(this.gameObject);
+            instance = this;
         }
     }
 }

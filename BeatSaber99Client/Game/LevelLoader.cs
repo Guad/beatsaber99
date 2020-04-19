@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -221,6 +222,15 @@ namespace BeatSaber99Client.Game
         public static void SwitchLevel(PreloadedLevel level, float startTime = 0f)
         {
             var _scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
+
+            if (_scoreController == null)
+                Plugin.log.Info("ScoreController was null!");
+
+            var oldCombo = _scoreController.GetPrivateField<int>("_combo");
+            var oldMaxCombo = _scoreController.maxCombo;
+            var oldScore = _scoreController.GetPrivateField<int>("_baseRawScore");
+            var oldTotalNotes = _scoreController.GetPrivateField<int>("_cutOrMissedNotes");
+
             var menuSceneSetupData =
                 Resources.FindObjectsOfTypeAll<MenuTransitionsHelper>().FirstOrDefault();
 
@@ -264,7 +274,21 @@ namespace BeatSaber99Client.Game
 
                 _gameScenesManager.PopScenes(0f, null, 
                     () => { 
-                        _gameScenesManager.PushScenes(transition, 0.0f);
+                        _gameScenesManager.PushScenes(transition, 0.0f, null, () =>
+                        {
+                            var newScoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
+
+                            if (newScoreController == null)
+                                Plugin.log.Info("new ScoreController was null!");
+
+                            newScoreController.SetPrivateField("_combo", oldCombo);
+                            newScoreController.SetPrivateField("_maxCombo", oldMaxCombo);
+                            newScoreController.SetPrivateField("_baseRawScore", oldScore);
+                            newScoreController.SetPrivateField("_prevFrameRawScore", oldScore);
+                            newScoreController.SetPrivateField("_cutOrMissedNotes", oldTotalNotes);
+
+                            Executor.instance.StartCoroutine(FinishMovingScores(oldCombo, oldScore));
+                        });
 
                     });
             }
@@ -272,6 +296,27 @@ namespace BeatSaber99Client.Game
             {
                 Plugin.log.Error("SceneSetupData is null!");
             }
+        }
+
+        private static IEnumerator FinishMovingScores(int oldCombo, int oldScore)
+        {
+            var comboui = Resources.FindObjectsOfTypeAll<ComboUIController>().FirstOrDefault();
+            var scoreui = Resources.FindObjectsOfTypeAll<ScoreUIController>().FirstOrDefault();
+
+            while (comboui == null || scoreui == null)
+            {
+                yield return null;
+
+                comboui = Resources.FindObjectsOfTypeAll<ComboUIController>().FirstOrDefault();
+                scoreui = Resources.FindObjectsOfTypeAll<ScoreUIController>().FirstOrDefault();
+            }
+
+            yield return new WaitForSeconds(0.2f);
+
+            comboui.HandleComboDidChange(oldCombo);
+            scoreui.HandleScoreDidChangeRealtime(oldScore, oldScore);
+
+            Plugin.log.Info("Score update successful!");
         }
 
         public static IDifficultyBeatmap GetDifficultyBeatmap(this IBeatmapLevel level,
