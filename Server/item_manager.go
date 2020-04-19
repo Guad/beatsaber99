@@ -38,11 +38,12 @@ func (im *ItemManager) Tick() {
 			})
 
 			log.WithFields(log.Fields{
-				"name":  im.client.name,
-				"id":    im.client.id,
-				"score": im.client.Score(),
-				"combo": im.client.lastState.CurrentCombo,
-				"item":  string(*im.currentItem),
+				"name":       im.client.name,
+				"id":         im.client.id,
+				"session_id": im.client.session.id,
+				"score":      im.client.Score(),
+				"combo":      im.client.lastState.CurrentCombo,
+				"item":       string(*im.currentItem),
 			}).Info("Gave item to user")
 		}
 	}
@@ -76,18 +77,20 @@ func (im *ItemManager) ActivateItem() {
 			})
 
 			log.WithFields(log.Fields{
-				"name":      im.client.name,
-				"id":        im.client.id,
-				"target":    target.name,
-				"target_id": target.id,
-				"item":      string(*im.currentItem),
+				"name":       im.client.name,
+				"id":         im.client.id,
+				"session_id": im.client.session.id,
+				"target":     target.name,
+				"target_id":  target.id,
+				"item":       string(*im.currentItem),
 			}).Info("User attacked someone else")
 		}
 	} else {
 		log.WithFields(log.Fields{
-			"name": im.client.name,
-			"id":   im.client.id,
-			"item": string(*im.currentItem),
+			"name":       im.client.name,
+			"id":         im.client.id,
+			"session_id": im.client.session.id,
+			"item":       string(*im.currentItem),
 		}).Info("User used their item")
 	}
 

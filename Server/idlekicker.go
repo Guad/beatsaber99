@@ -56,6 +56,7 @@ func StartIdlekickerForSession(session *Session) {
 					"id":          p.id,
 					"ip":          p.ip,
 					"platform":    p.platform,
+					"session_id":  session.id,
 					"sessionTime": time.Now().Sub(p.joinTime).Seconds(),
 					"state":       string(p.state),
 					"score":       p.Score(),

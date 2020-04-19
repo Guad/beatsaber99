@@ -96,6 +96,7 @@ func (s *Session) RemovePlayer(player *Client) {
 				"name":        winner.name,
 				"id":          winner.id,
 				"ip":          winner.ip,
+				"session_id":  s.id,
 				"platform":    winner.platform,
 				"sessionTime": time.Now().Sub(winner.joinTime).Seconds(),
 				"score":       winner.Score(),
