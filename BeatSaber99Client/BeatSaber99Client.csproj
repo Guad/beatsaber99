@@ -242,6 +242,7 @@
     <Compile Include="Packets\PlayersLeftPacket.cs" />
     <Compile Include="Packets\UseItemPacket.cs" />
     <Compile Include="PluginConfig.cs" />
+    <Compile Include="Session\ScoreManager.cs" />
     <Compile Include="Session\SessionState.cs" />
     <Compile Include="Packets\StartPacket.cs" />
     <Compile Include="Packets\WinnerPacket.cs" />

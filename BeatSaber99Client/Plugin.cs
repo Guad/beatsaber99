@@ -45,6 +45,7 @@ namespace BeatSaber99Client
             Gameplay.Init();
             Jukebox.Init();
             ItemManager.Init();
+            ScoreManager.Init();
 
             BSEvents.menuSceneLoadedFresh += BSEventsOnmenuSceneLoadedFresh;
             BSEvents.gameSceneActive += BSEventsOngameSceneActive;
