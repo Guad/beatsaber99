@@ -18,6 +18,7 @@ namespace BeatSaber99Client.Packets
 
             Plugin.log.Info($"Time offset from server: {offset}");
 
+            // Once we synchronized clocks, we can start matchmaking
             Client.ServerTimeOffset = offset;
             Client.StartMatchmaking();
         }

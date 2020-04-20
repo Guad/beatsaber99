@@ -7,6 +7,9 @@ using UnityEngine.XR;
 
 namespace BeatSaber99Client.Items
 {
+    /// <summary>
+    /// Manages the activation of items and their effects.
+    /// </summary>
     public class ItemManager : MonoBehaviour
     {
         public static ItemManager instance;
@@ -173,6 +176,7 @@ namespace BeatSaber99Client.Items
                 ItemType = SessionState.CurrentItem,
             });
 
+            // We don't want to activate offensive items on ourselves
             switch (SessionState.CurrentItem)
             {
                 case ItemTypes.Brink:

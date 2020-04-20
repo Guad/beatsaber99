@@ -8,15 +8,15 @@ using Random = UnityEngine.Random;
 
 namespace BeatSaber99Client.Items
 {
+    /// <summary>
+    ///  Manages the in-game note spawning and altering the current level.
+    /// </summary>
     public class BeatmapSpawnManager : MonoBehaviour
     {
         public static BeatmapSpawnManager instance;
-        
-        private BeatmapObjectSpawnController _spawnController;
 
         public static void Init()
         {
-
             if (instance == null)
                 instance = new GameObject("beatsaber99_spawnmanager").AddComponent<BeatmapSpawnManager>();
         }
@@ -25,11 +25,6 @@ namespace BeatSaber99Client.Items
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-
-            _spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault();
-
-            if (_spawnController == null)
-                Plugin.log.Info("Spawn manager was null!");
         }
 
 
@@ -39,9 +34,13 @@ namespace BeatSaber99Client.Items
             BeatmapData beatmapData = callbackController.GetField<BeatmapData>("_beatmapData");
             BeatmapObjectData[] objects;
             NoteData note;
-            
+
+            var spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault();
+            if (spawnController == null)
+                Plugin.log.Info("Spawn manager was null!");
+
             var movementData =
-                _spawnController.GetField<BeatmapObjectSpawnMovementData>("_beatmapObjectSpawnMovementData");
+                spawnController.GetField<BeatmapObjectSpawnMovementData>("_beatmapObjectSpawnMovementData");
 
             
             float start = (Time.time - Jukebox.instance.songStart) + movementData.spawnAheadTime + 0.1f;

@@ -52,17 +52,6 @@ namespace BeatSaber99Client
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 
             log.Info("Beat Saber 99 started");
-
-            Client.ClientStatusChanged += ClientOnClientStatusChanged;
-        }
-
-        private void ClientOnClientStatusChanged(object sender, ClientStatus e)
-        {
-            if (e == ClientStatus.Waiting && Client.Status == ClientStatus.Playing)
-            {
-                // Disabled because of an exception on level change (???)
-                // CleanupFiles();
-            }
         }
 
         private void BSEventsOnmenuSceneLoadedFresh()
@@ -88,15 +77,11 @@ namespace BeatSaber99Client
             }
         }
 
-        public static void CleanupFiles()
+        /// <summary>
+        /// Clean up the songs downloaded during gameplay.
+        /// </summary>
+        private static void Cleanup()
         {
-            var t = new Thread(DoTheCleanup);
-            t.Start();
-        }
-
-        private static void DoTheCleanup()
-        {
-
             foreach (var path in CleanPaths)
             {
                 if (Directory.Exists(path))
@@ -117,7 +102,7 @@ namespace BeatSaber99Client
         {
             Client.Disconnect();
 
-            DoTheCleanup();
+            Cleanup();
         }
     }
 }

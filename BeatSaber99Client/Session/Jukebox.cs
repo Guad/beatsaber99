@@ -41,6 +41,7 @@ namespace BeatSaber99Client.Session
             {
                 var now = Time.time;
 
+                // Preload the next song half-through the current one
                 if (nextLevel == null && 
                     SongQueue.Count > 0 &&
                     !songPreloaded &&
@@ -91,7 +92,7 @@ namespace BeatSaber99Client.Session
             var characteristic = LevelLoader.Characteristics.First(c => c.serializedName == song.Characteristic);
             var gameplay = GameplayModifiers.defaultModifiers;
 
-
+            // Level IDs prefixed with 'bsaber.com/' are custom songs.
             if (song.LevelID.StartsWith("bsaber.com/"))
             {
                 var split = song.LevelID.Split('/');
@@ -161,6 +162,7 @@ namespace BeatSaber99Client.Session
 
                     Plugin.log.Info($"Next level song duration: {duration}");
 
+                    // We have to account for speed also.
                     TrackSong(duration / nextLevel.speed);
                     LevelLoader.SwitchLevel(nextLevel);
                     songPreloaded = false;

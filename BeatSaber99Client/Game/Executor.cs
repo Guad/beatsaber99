@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace BeatSaber99Client.Game
 {
+    /// <summary>
+    /// Dispatches events from other threads onto the main game thread.
+    /// </summary>
     public class Executor : MonoBehaviour
     {
         public static Executor instance;

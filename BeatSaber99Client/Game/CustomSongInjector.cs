@@ -10,6 +10,10 @@ using UnityEngine;
 
 namespace BeatSaber99Client.Game
 {
+    /// <summary>
+    /// Parses and loads custom songs from a folder on the filesystem.
+    /// Also downloads songs from the web.
+    /// </summary>
     public static class CustomSongInjector
     {
         private static CustomLevelLoader _customLevelLoader;
@@ -35,7 +39,6 @@ namespace BeatSaber99Client.Game
             var t = new Thread(() =>
             {
                 string tmpPath = Path.Combine(Path.GetTempPath(), "tmp_beatsaber99_download.zip");
-                Plugin.log.Info("Starting song download into " + tmpPath);
 
                 if (File.Exists(tmpPath))
                     File.Delete(tmpPath);
@@ -72,7 +75,7 @@ namespace BeatSaber99Client.Game
                     return;
                 }
 
-                Plugin.log.Info("Downloaded & extracted to " + songDirectory);
+                Plugin.log.Debug("Downloaded & extracted to " + songDirectory);
                 Plugin.CleanPaths.Add(songDirectory);
 
                 Executor.Enqueue(() =>
@@ -109,6 +112,7 @@ namespace BeatSaber99Client.Game
 
         }
 
+        // Taken from SongCore
         public static CustomPreviewBeatmapLevel LoadSong(StandardLevelInfoSaveData saveData, string songPath, out string hash, SongFolderEntry folderEntry = null)
         {
             CustomPreviewBeatmapLevel result;

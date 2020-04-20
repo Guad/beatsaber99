@@ -15,6 +15,8 @@ namespace BeatSaber99Client.Session
 {
     public static class Client
     {
+        // Offset of our current Unix timestamp with the server one, expressed in milliseconds.
+        // server_time = current_time + ServerTimeOffset
         public static long ServerTimeOffset;
 
         private static ClientStatus _status;
@@ -73,6 +75,7 @@ namespace BeatSaber99Client.Session
             {
                 Plugin.log.Info("Connection successful...");
 
+                // First, synchronize our clocks.
                 _client.Send(JsonConvert.SerializeObject(new TimeSynchronizationPacket()
                 {
                     PeerTime = TimeSynchronizationPacket.UnixTimeMilliseconds(),
@@ -110,11 +113,12 @@ namespace BeatSaber99Client.Session
             }
         }
 
+        /// <summary>
+        /// After synchronizing our clocks, we start matchmaking by sending our data.
+        /// </summary>
         public static void StartMatchmaking()
         {
             if (Client.Status != ClientStatus.Connecting) return;
-
-            // We are connected and automatically matchmaking.
             Plugin.log.Info("Started matchmaking...");
 
             var id = GetUserInfo.GetUserID();

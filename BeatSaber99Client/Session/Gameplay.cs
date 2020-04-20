@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace BeatSaber99Client.Session
 {
+    /// <summary>
+    /// Keep track of gameplay stuff like energy levels, level quits, combos, etc.
+    /// Also send our data to server periodically.
+    /// </summary>
     public class Gameplay : MonoBehaviour
     {
         private ScoreController _scoreController;

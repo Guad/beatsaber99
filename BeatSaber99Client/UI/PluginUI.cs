@@ -80,6 +80,10 @@ namespace BeatSaber99Client.UI
             StartCoroutine(EnableButtonFirstLaunch());
         }
 
+        /// <summary>
+        /// We have to wait a bit before some things finish initializing.
+        /// </summary>
+        /// <returns></returns>
         IEnumerator EnableButtonFirstLaunch()
         {
             yield return new WaitForSeconds(3.0f);
@@ -136,6 +140,10 @@ namespace BeatSaber99Client.UI
             _eventLogEmptyingCoroutine = StartCoroutine(RemoveOldMessagesCoroutine());
         }
 
+        /// <summary>
+        /// Scroll away messages in the event log
+        /// </summary>
+        /// <returns></returns>
         IEnumerator RemoveOldMessagesCoroutine()
         {
             while (Client.Status == ClientStatus.Playing)
@@ -190,6 +198,7 @@ namespace BeatSaber99Client.UI
                     float delta = (now - start) / animationTime;
                     if (delta > 1.0f) delta = 1.0f;
 
+                    // Use a sine curve
                     delta = Mathf.Sin(delta * (Mathf.PI / 2.0f));
 
                     for (int i = 0; i < _eventLog.Length; i++)

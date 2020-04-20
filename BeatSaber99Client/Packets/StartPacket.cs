@@ -14,6 +14,7 @@ namespace BeatSaber99Client.Packets
 
         public void Dispatch()
         {
+            // We don't start instantly, start is synchronized between all players.
             var t = new Thread(() =>
             {
                 var now = TimeSynchronizationPacket.UnixTimeMilliseconds();
@@ -27,6 +28,7 @@ namespace BeatSaber99Client.Packets
                     now = TimeSynchronizationPacket.UnixTimeMilliseconds();
                 }
 
+                // Do the start on the main thread.
                 Executor.Enqueue(() =>
                 {
                     SessionState.PlayersLeft = TotalPlayers;

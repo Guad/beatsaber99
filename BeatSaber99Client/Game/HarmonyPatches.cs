@@ -34,6 +34,7 @@ namespace BeatSaber99Client.Game
         }
     }
 
+    // Crashed on level switch to custom one.
     [HarmonyPatch(typeof(RichPresenceManager))]
     [HarmonyPatch("HandleGameScenesManagerTransitionDidFinish")]
     class RichPresenceBugFix

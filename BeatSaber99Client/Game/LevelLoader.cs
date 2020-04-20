@@ -9,6 +9,9 @@ using Object = UnityEngine.Object;
 
 namespace BeatSaber99Client.Game
 {
+    /// <summary>
+    /// Loads and changes levels in the game.
+    /// </summary>
     public static class LevelLoader
     {
         private static bool _loaded = false;
@@ -28,6 +31,7 @@ namespace BeatSaber99Client.Game
             _beatmapCharacteristics = Resources.FindObjectsOfTypeAll<BeatmapCharacteristicSO>();
         }
 
+        // This is stuff like 360 level, one saber, standard, 90 degrees, etc.
         public static BeatmapCharacteristicSO[] Characteristics
         {
             get
@@ -41,6 +45,7 @@ namespace BeatSaber99Client.Game
         public static BeatmapCharacteristicSO StandardCharacteristic =>
             _beatmapCharacteristics.First(c => c.serializedName == "Standard");
 
+        // Only assume the official levels are contained here.
         public static IEnumerable<IPreviewBeatmapLevel> AllLevels
         {
             get
@@ -319,6 +324,7 @@ namespace BeatSaber99Client.Game
             Plugin.log.Info("Score update successful!");
         }
 
+        // Taken from BeatSaberMultiplayer
         public static IDifficultyBeatmap GetDifficultyBeatmap(this IBeatmapLevel level,
             BeatmapCharacteristicSO characteristic, BeatmapDifficulty difficulty, bool strictDifficulty = false)
         {

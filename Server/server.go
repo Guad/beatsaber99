@@ -68,6 +68,9 @@ func clientLoop(ws *websocket.Conn, realip string) {
 		"position":    position,
 	}).Info("User has disconnected")
 
+	client.items.client = nil
+	client.items = nil
+
 	atomic.AddInt32(&totalConnections, -1)
 }
 
