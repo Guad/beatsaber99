@@ -19,7 +19,7 @@ namespace BeatSaber99Client.Game
             Plugin.log.Info("Patching with harmony...");
 
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes()
-                .Where(x => x.IsClass && x.Namespace == nameof(BeatSaber99Client) + ".OverriddenClasses"))
+                .Where(x => x.IsClass && x.Namespace == nameof(BeatSaber99Client) + ".Game.OverriddenClasses"))
             {
                 List<MethodInfo> harmonyMethods = instance.CreateClassProcessor(type).Patch();
                 if (harmonyMethods != null && harmonyMethods.Count > 0)
@@ -33,7 +33,10 @@ namespace BeatSaber99Client.Game
 
         }
     }
+}
 
+namespace BeatSaber99Client.Game.OverriddenClasses
+{
     // Crashed on level switch to custom one.
     [HarmonyPatch(typeof(RichPresenceManager))]
     [HarmonyPatch("HandleGameScenesManagerTransitionDidFinish")]
