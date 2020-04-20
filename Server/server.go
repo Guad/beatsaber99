@@ -98,6 +98,6 @@ func connectionLogger() {
 		}
 
 		lastConnections = newConnections
-		time.Sleep(2000)
+		time.Sleep(2 * time.Second)
 	}
 }
