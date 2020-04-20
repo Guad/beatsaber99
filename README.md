@@ -1,4 +1,6 @@
-﻿# Beat Saber 99
+# Beat Saber 99
+
+### [Download](https://github.com/Guad/beatsaber99/releases/latest)
 
 Beat Saber 99 is a Battle Royale-like gamemode for Beat Saber. You can join a match and battle it out with other 99 players, in real time. Use defensive items to your advantage and offensive items to hinder your opponents. Achieve the victory royale by being the last one swinging.
 
