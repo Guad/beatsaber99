@@ -93,6 +93,8 @@ namespace BeatSaber99Client.UI
 
         public void SetupIngameUI()
         {
+            if (Client.Status != ClientStatus.Playing) return;
+
             if (winnerText != null)
                 winnerText.Delete();
             if (playersLeftText != null)
