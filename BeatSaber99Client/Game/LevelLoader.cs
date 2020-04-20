@@ -275,27 +275,27 @@ namespace BeatSaber99Client.Game
                     practiceSettings,
                     "Menu",
                     false);
+
                 var _gameScenesManager = Object.FindObjectOfType<GameScenesManager>();
 
-                _gameScenesManager.PopScenes(0f, null, 
-                    () => { 
-                        _gameScenesManager.PushScenes(transition, 0.0f, null, () =>
-                        {
-                            var newScoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
+                _gameScenesManager.ReplaceScenes(transition, 0f, null, () =>
+                {
+                    Plugin.log.Debug("Game scene has been replaced!");
+                    var newScoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
 
-                            if (newScoreController == null)
-                                Plugin.log.Info("new ScoreController was null!");
+                    if (newScoreController == null)
+                        Plugin.log.Info("new ScoreController was null!");
 
-                            newScoreController.SetPrivateField("_combo", oldCombo);
-                            newScoreController.SetPrivateField("_maxCombo", oldMaxCombo);
-                            newScoreController.SetPrivateField("_baseRawScore", oldScore);
-                            newScoreController.SetPrivateField("_prevFrameRawScore", oldScore);
-                            newScoreController.SetPrivateField("_cutOrMissedNotes", oldTotalNotes);
+                    newScoreController.SetPrivateField("_combo", oldCombo);
+                    newScoreController.SetPrivateField("_maxCombo", oldMaxCombo);
+                    newScoreController.SetPrivateField("_baseRawScore", oldScore);
+                    newScoreController.SetPrivateField("_prevFrameRawScore", oldScore);
+                    newScoreController.SetPrivateField("_cutOrMissedNotes", oldTotalNotes);
 
-                            Executor.instance.StartCoroutine(FinishMovingScores(oldCombo, oldScore));
-                        });
+                    Executor.instance.StartCoroutine(FinishMovingScores(oldCombo, oldScore));
 
-                    });
+                    Plugin.log.Info("Level switch is complete!");
+                });
             }
             else
             {

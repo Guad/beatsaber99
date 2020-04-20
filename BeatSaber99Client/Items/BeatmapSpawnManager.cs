@@ -55,7 +55,8 @@ namespace BeatSaber99Client.Items
                         if (beatmapObject.time > start && beatmapObject.time < end)
                         {
                             note = beatmapObject as NoteData;
-                            callback?.Invoke(note);
+                            if (note != null)
+                                callback?.Invoke(note);
                         }
 
                 }
