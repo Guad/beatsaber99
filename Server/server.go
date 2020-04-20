@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"sync/atomic"
 	"time"
 
 	"github.com/guad/bsaber99/util"
@@ -12,6 +13,7 @@ import (
 )
 
 var upgrader = websocket.Upgrader{}
+var totalConnections int32
 
 func clientLoop(ws *websocket.Conn, realip string) {
 	client := &Client{
@@ -23,6 +25,8 @@ func clientLoop(ws *websocket.Conn, realip string) {
 	}
 
 	client.items.client = client
+
+	atomic.AddInt32(&totalConnections, 1)
 
 	idlewatch <- client
 
@@ -63,6 +67,8 @@ func clientLoop(ws *websocket.Conn, realip string) {
 		"score":       client.Score(),
 		"position":    position,
 	}).Info("User has disconnected")
+
+	atomic.AddInt32(&totalConnections, -1)
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
@@ -76,4 +82,19 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 
 	defer ws.Close()
 	clientLoop(ws, realip)
+}
+
+func connectionLogger() {
+	lastConnections := atomic.LoadInt32(&totalConnections)
+	for {
+		newConnections := atomic.LoadInt32(&totalConnections)
+		if newConnections != lastConnections {
+			log.WithFields(log.Fields{
+				"connections": newConnections,
+			}).Info("Total connections changed")
+		}
+
+		lastConnections = newConnections
+		time.Sleep(2000)
+	}
 }

@@ -24,6 +24,7 @@ func main() {
 
 	go matchmake()
 	go StartIdlekicker()
+	go connectionLogger()
 
 	http.HandleFunc("/ws", serveWs)
 
